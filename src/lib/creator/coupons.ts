@@ -21,7 +21,7 @@ export function promotionProblems(p: Promotion, state: Pick<CreatorState, "items
   else if (!/^[A-Z0-9_-]{3,40}$/.test(p.code)) e.code = "Use 3–40 letters, numbers, hyphens or underscores.";
   else if (state.promotions.some((i) => i.id !== p.id && i.code.toUpperCase() === p.code.toUpperCase())) e.code = "This coupon code is already in use.";
   if (!Number.isFinite(p.discount) || p.discount <= 0) e.discount = "Enter a discount above zero.";
-  else if (p.discountType === "percent" && (p.discount < 1 || p.discount > 100)) e.discount = "Percentage must be between 1 and 100.";
+  else if (p.discountType !== "fixed" && (p.discount < 1 || p.discount > 100)) e.discount = "Percentage must be between 1 and 100.";
   else if (p.discountType === "fixed") {
     const item = state.items.find((i) => i.id === p.itemId);
     if (item && p.discount >= item.price) e.discount = "A fixed discount must be less than the product price.";

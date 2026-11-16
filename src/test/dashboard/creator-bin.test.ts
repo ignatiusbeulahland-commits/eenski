@@ -28,7 +28,7 @@ describe("product Bin", () => {
     const state: CreatorState = {
       ...base,
       items: moveToBin(base, "toolkit"),
-      promotions: [{ id: "p", name: "Launch", code: "L10", itemId: "toolkit", discount: 10, start: "2026-11-01", end: "2026-12-01", status: "draft" }],
+      promotions: [{ id: "p", name: "Launch", code: "L10", itemId: "toolkit", discount: 10, discountType: "percent", startTime: "00:00", endTime: "23:59", start: "2026-11-01", end: "2026-12-01", status: "draft" }],
     };
     const next = deleteForever(state, "toolkit");
     expect(next?.items).toHaveLength(0);

@@ -54,7 +54,7 @@ export function MyBookingsPage() {
                 <p className="flex items-center gap-1.5 text-xs text-muted-foreground"><UserRound className="h-3.5 w-3.5 text-cobalt" aria-hidden="true" />{b.host}</p>
                 <p className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
                   <Clock className="h-3.5 w-3.5 text-cobalt" aria-hidden="true" />
-                  {b.when ? `${dayIn(b.when, tz)} · ${timeIn(b.when, tz)} ${zoneLabel(tz)}` : "Your coach will confirm a time with you"}
+                  {b.when ? `${dayIn(b.when, tz)} · ${timeIn(b.when, tz)} ${zoneLabel(b.when, tz)}` : "Your coach will confirm a time with you"}
                 </p>
                 <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   {b.online ? <Video className="h-3.5 w-3.5 text-cobalt" aria-hidden="true" /> : <MapPin className="h-3.5 w-3.5 text-cobalt" aria-hidden="true" />}
