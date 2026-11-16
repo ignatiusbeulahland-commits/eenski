@@ -14,6 +14,8 @@ import {
   liveConfigSchema,
   serviceConfigSchema,
 } from "./products";
+export const STORE_ACCENTS = ["cobalt", "sky", "midnight", "lime"] as const;
+export type StoreAccent = (typeof STORE_ACCENTS)[number];
 export const KINDS = ["course", "ebook", "live", "service", "coaching"] as const;
 export const itemSchema = z.object({
   id: z.string(),
@@ -248,6 +250,22 @@ export const stateSchema = z.object({
         .default({ headline: "", subline: "", style: "cobalt" }),
     })
     .default({ name: "", handle: "", tagline: "", about: "", published: false, banner: "", bannerSource: "none", bannerWords: { headline: "", subline: "", style: "cobalt" } }),
+  /** Public profile page extras (accent, socials, achievements, featured pick, product order). */
+  storePage: z
+    .object({
+      accent: z.enum(STORE_ACCENTS).default("cobalt"),
+      bannerY: z.number().min(0).max(100).default(50),
+      bio: z.string().default(""),
+      video: z.string().default(""),
+      portfolio: z.string().default(""),
+      socials: z.object({ instagram: z.string(), youtube: z.string(), linkedin: z.string(), tiktok: z.string(), x: z.string() }).default({ instagram: "", youtube: "", linkedin: "", tiktok: "", x: "" }),
+      achievements: z.array(z.object({ id: z.string(), title: z.string(), detail: z.string() })).default([]),
+      featuredId: z.string().default(""),
+      hiddenIds: z.array(z.string()).default([]),
+      order: z.array(z.string()).default([]),
+      testimonials: z.array(z.object({ id: z.string(), name: z.string(), quote: z.string(), itemId: z.string(), rating: z.number().int().min(1).max(5) })).default([]),
+    })
+    .default({ accent: "cobalt", bannerY: 50, bio: "", video: "", portfolio: "", socials: { instagram: "", youtube: "", linkedin: "", tiktok: "", x: "" }, achievements: [], featuredId: "", hiddenIds: [], order: [], testimonials: [] }),
   availability: z
     .object({
       timezone: z.string(),
