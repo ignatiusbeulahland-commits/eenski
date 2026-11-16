@@ -1,6 +1,6 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip as ChartTip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, Cell, Line, LineChart, Pie, PieChart, ResponsiveContainer, Tooltip as ChartTip, XAxis, YAxis } from "recharts";
 import {
   ArrowDownRight, ArrowUpRight, Banknote, CalendarDays, Compass, Download, Filter, Info, Mail, Megaphone, Phone, Store, UserCheck, UserPlus, UsersRound, Clock, X,
 } from "lucide-react";
@@ -14,6 +14,7 @@ import { Switch } from "@/components/dashboard-ui/switch";
 import { DialogActions } from "@/components/shared/DialogActions";
 import { PageHeader, Panel, EmptyState, SearchInput, FilterSelect, StatusBadge } from "@/components/affiliate/ui";
 import { Field } from "@/components/affiliate/Field";
+import { BrandIcon, brandArtwork, SemanticIcon } from "@/components/affiliate/BrandIcon";
 import { naira } from "@/lib/affiliate/products";
 import { useCreator, activityEntry } from "@/lib/creator/store";
 import { isEmail, type ItemKind } from "@/lib/creator/rules";
@@ -27,6 +28,7 @@ import { downloadCsv } from "../shared";
 import { cn } from "@/lib/utils";
 
 const COLORS: Record<Channel, string> = { dreamverse: "var(--cobalt)", self: "var(--sky)", offline: "var(--lime-press)" };
+const ART: Record<Channel, string> = { dreamverse: brandArtwork.market, self: brandArtwork.megaphone, offline: brandArtwork.people };
 const ICONS: Record<Channel, typeof Compass> = { dreamverse: Compass, self: Megaphone, offline: Store };
 const HINT: Record<Channel, string> = {
   self: "People who came through your own links, socials and marketing.",
@@ -69,11 +71,11 @@ function Spark({ data, k, color, id }: { data: Record<string, number | string>[]
     </div>
   );
 }
-function MetricCard({ icon: Icon, label, value, hint, children, tone = "bg-ice text-cobalt" }: { icon: typeof Compass; label: string; value: string; hint: string; children?: ReactNode; tone?: string }) {
+function MetricCard({ art, label, value, hint, children, tone = "bg-ice text-cobalt" }: { art: string; label: string; value: string; hint: string; children?: ReactNode; tone?: string }) {
   return (
-    <div className="surface flex min-w-0 flex-col gap-3 p-4 transition hover:-translate-y-0.5 hover:shadow-md sm:p-5">
+    <div className="stat-card surface relative flex min-w-0 flex-col gap-3 overflow-hidden p-4 sm:p-5">
       <div className="flex items-center justify-between gap-2">
-        <span className={cn("grid h-9 w-9 place-items-center rounded-xl", tone)}><Icon className="h-4.5 w-4.5" /></span>
+        <BrandIcon src={art} className="stat-art -ml-1 h-11 w-11" />
         <InfoTip text={hint} />
       </div>
       <div className="min-w-0">
@@ -180,7 +182,7 @@ export function DreamersPage() {
                   {metric === "money" && <span>· {peopleInRange.toLocaleString()} dreamers</span>}
                 </p>
               </div>
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-cobalt text-primary-foreground">{metric === "people" ? <UserCheck /> : <Banknote />}</span>
+              <BrandIcon src={metric === "people" ? brandArtwork.people : brandArtwork.cash} className="h-14 w-14 drop-shadow-md" />
             </div>
             <div className="mt-4 h-40 w-full sm:h-48">
               <ResponsiveContainer width="100%" height="100%">
@@ -198,7 +200,7 @@ export function DreamersPage() {
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-1 xl:grid-cols-2">
             {CHANNELS.map((c, i) => (
               <div key={c} className={cn(i === 2 && "col-span-2 lg:col-span-1 xl:col-span-2")}>
-                <MetricCard icon={ICONS[c]} label={metric === "money" ? (c === "offline" ? "Offline enrolments" : `Revenue · ${channelLabel[c]}`) : channelLabel[c]}
+                <MetricCard art={ART[c]} label={metric === "money" ? (c === "offline" ? "Offline enrolments" : `Revenue · ${channelLabel[c]}`) : channelLabel[c]}
                   value={metric === "money" && c === "offline" ? `${total(dreamers, "people", range, c)} · no payment` : fmt(metric, total(dreamers, metric, range, c))} hint={HINT[c]}
                   tone={c === "offline" ? "bg-lime text-midnight" : c === "self" ? "bg-ice text-sky-text" : "bg-ice text-cobalt"}>
                   <Spark data={metric === "money" && c === "offline" ? series(dreamers, "people", range) as never : points as never} k={c} color={COLORS[c]} id={`sp-${c}`} />
@@ -215,7 +217,7 @@ export function DreamersPage() {
             const k = KINDS[i]!;
             return (
               <Link key={p.to} to={p.to} className={cn("surface group flex items-center gap-3 p-4 transition hover:-translate-y-0.5 hover:border-cobalt-100 hover:shadow-md focus-visible:outline-2 focus-visible:outline-cobalt", i === 4 && "col-span-2 sm:col-span-1")}>
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-ice text-cobalt transition group-hover:bg-cobalt group-hover:text-primary-foreground"><p.icon className="h-5 w-5" /></span>
+                <SemanticIcon icon={p.icon} className="h-10 w-10 transition-transform group-hover:-translate-y-0.5" fallbackClassName="h-5 w-5 text-cobalt" />
                 <span className="min-w-0"><span className="block text-xl font-bold tabular-nums text-ink">{productCount(k)}</span><span className="block truncate text-xs text-muted-foreground">{k === "coaching" ? "Consultations / coaching" : kindInfo[k].plural}</span></span>
               </Link>
             );
@@ -237,6 +239,7 @@ export function DreamersPage() {
                 );
               })}
             </div>
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-center">
             <div className="h-64 w-full sm:h-72" aria-label="Traffic channels chart">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={tPoints} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
@@ -249,6 +252,8 @@ export function DreamersPage() {
                   ))}
                 </LineChart>
               </ResponsiveContainer>
+            </div>
+            <ChannelDonut data={CHANNELS.map((c) => ({ c, value: tPoints.reduce((n, pt) => n + Number((pt as Record<string, unknown>)[c] ?? 0), 0) }))} fmt={(v) => fmt(metric, v)} />
             </div>
           </div>
         </Panel>
@@ -290,6 +295,29 @@ export function DreamersPage() {
         <ProfileDialog d={profile} onClose={() => setProfile(null)} onActivate={activate} />
       </div>
     </TooltipProvider>
+  );
+}
+
+function ChannelDonut({ data, fmt: f }: { data: { c: Channel; value: number }[]; fmt: (v: number) => string }) {
+  const sum = data.reduce((n, d) => n + d.value, 0);
+  if (!sum) return <p className="text-center text-sm text-muted-foreground">No activity in this period yet.</p>;
+  return (
+    <div>
+      <div className="relative mx-auto h-44 w-44">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie data={data} dataKey="value" nameKey="c" innerRadius="62%" outerRadius="96%" paddingAngle={2} cornerRadius={6} stroke="var(--card)" strokeWidth={2} animationDuration={600}>
+              {data.map((d) => <Cell key={d.c} fill={COLORS[d.c]} />)}
+            </Pie>
+            <ChartTip contentStyle={tipStyle} formatter={(v, n) => [`${f(Number(v))} · ${Math.round((Number(v) / sum) * 100)}%`, channelLabel[n as Channel] ?? n]} />
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="pointer-events-none absolute inset-0 grid place-items-center text-center"><div><p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Total</p><p className="text-base font-extrabold tabular-nums">{f(sum)}</p></div></div>
+      </div>
+      <ul className="mt-3 space-y-1.5 text-xs">
+        {data.map((d) => <li key={d.c} className="flex items-center justify-between gap-2"><span className="flex items-center gap-2 font-semibold"><span className="h-2.5 w-2.5 rounded-full" style={{ background: COLORS[d.c] }} />{channelLabel[d.c]}</span><span className="tabular-nums text-muted-foreground">{Math.round((d.value / sum) * 100)}%</span></li>)}
+      </ul>
+    </div>
   );
 }
 
