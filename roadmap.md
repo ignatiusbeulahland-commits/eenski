@@ -77,3 +77,4 @@
 - [ ] Promotion flow: details → generate link → copy screen (Charm reacts) → share (simulated) → success
 - [ ] Promoted products: list with stable link, recopy, status, simulated stats
 - [ ] Mobile/tablet/desktop QA, tests, commit
+- [ ] Events page redesign (featured top, banners, cards, filters, details pages, simulated registration, mobile polish)
