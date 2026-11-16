@@ -178,7 +178,7 @@ export function StorefrontPage() {
       <StorefrontBranding photo={photo} />
 
       <Link to="/creator/storefront/customize" className="surface group mb-6 flex items-center gap-4 p-5 transition-colors hover:border-cobalt-100 sm:p-6">
-        <BrandIcon src={brandArtwork.sparkle ?? kindArt.course} className="h-12 w-12" />
+        <BrandIcon src={brandArtwork.market} className="h-12 w-12" />
         <span className="min-w-0 flex-1">
           <span className="block text-[15px] font-extrabold group-hover:text-cobalt">Customise your page</span>
           <span className="block text-[13px] text-muted-foreground">Accent colour, story, welcome video, links, achievements, featured product and order, with a live phone and desktop preview.</span>
