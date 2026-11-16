@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ArrowLeft, ExternalLink, Eye, Monitor, Smartphone, Store } from "lucide-react";
+import { ExternalLink, Eye, Monitor, Smartphone, Store } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { EmptyState, PageHeader } from "@/components/affiliate/ui";
@@ -15,7 +15,7 @@ const SIZES = { phone: { w: 390, h: 780 }, desktop: { w: 1280, h: 860 } } as con
 type Device = keyof typeof SIZES;
 
 /** The whole public page in a real browser frame, scaled to fit; updates as the creator edits. */
-function PreviewFrame({ handle, device, tall }: { handle: string; device: Device; tall?: boolean }) {
+function PreviewFrame({ handle, device }: { handle: string; device: Device }) {
   const box = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   useEffect(() => {
@@ -27,7 +27,7 @@ function PreviewFrame({ handle, device, tall }: { handle: string; device: Device
   }, []);
   const size = SIZES[device];
   const scale = width ? Math.min(1, width / size.w) : 0;
-  const h = tall && device === "phone" ? size.h : size.h;
+  const h = size.h;
   return (
     <div ref={box} className="w-full">
       <div className={cn("mx-auto overflow-hidden bg-background shadow-lift ring-1 ring-line", device === "phone" ? "rounded-[28px] ring-[6px] ring-midnight" : "rounded-xl")} style={{ width: size.w * scale, height: h * scale }}>
@@ -63,12 +63,10 @@ export function StoreCustomizePage() {
   const [device, setDevice] = useState<Device>("phone");
   const [open, setOpen] = useState(false);
 
-  const back = <Button asChild variant="quiet" size="sm"><Link to="/creator/storefront"><ArrowLeft />Storefront</Link></Button>;
 
   if (!handle) {
     return (
       <div>
-        <div className="mb-3">{back}</div>
         <PageHeader eyebrow="Your store" title="Customise your page" description="Choose how your public creator page looks." />
         <div className="surface"><EmptyState icon={Store} title="Add your store name and link first" description="Your page needs a name and a link before you can design and preview it." action={<Button asChild><Link to="/creator/storefront">Set up storefront</Link></Button>} /></div>
       </div>
@@ -77,7 +75,6 @@ export function StoreCustomizePage() {
 
   return (
     <div>
-      <div className="mb-3">{back}</div>
       <PageHeader
         eyebrow="Your store"
         title="Customise your page"
@@ -91,10 +88,10 @@ export function StoreCustomizePage() {
       />
       {sample && <p className="mb-4 rounded-2xl bg-ice px-4 py-3 text-[13px] font-semibold text-ink dark:bg-soft">Sample data is on: the preview fills empty sections with sample products, achievements and testimonials so you can see the whole page. Nothing sample is saved or shown to visitors.</p>}
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
-        <div className="min-w-0"><StorePageSettings sample={sample} /></div>
-        <aside className="hidden xl:block" aria-label="Live preview">
-          <div className="sticky top-24 space-y-3">
+      <div className={cn("grid gap-6", device === "phone" && "xl:grid-cols-[minmax(0,1fr)_420px]")}>
+        <div className={cn("min-w-0", device === "desktop" && "xl:order-2")}><StorePageSettings sample={sample} /></div>
+        <aside className={cn("hidden xl:block", device === "desktop" && "xl:order-1")} aria-label="Live preview">
+          <div className={cn("space-y-3", device === "phone" && "sticky top-24")}>
             <div className="flex items-center justify-between gap-2">
               <p className="flex items-center gap-2 text-sm font-extrabold"><Eye className="h-4 w-4 text-cobalt" aria-hidden="true" />Live preview</p>
               <DeviceToggle device={device} onChange={setDevice} />
