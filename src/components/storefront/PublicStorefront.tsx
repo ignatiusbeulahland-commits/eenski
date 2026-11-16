@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { ArrowLeft, BadgeCheck, BookOpen, Briefcase, Clock, Eye, Flag, Sparkles, Instagram, Linkedin, Share2, Star, Store, Twitter, Youtube } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -279,9 +279,10 @@ function ItemSpotlight({ store, item, heading, back, id }: { store: PublicStore;
   const [rating, setRating] = useState<{ average: number; count: number } | null>(null);
   useEffect(() => { void fetchReviews(shopItem.reviewKey ?? shopItem.key).then((r) => setRating(summarizeReviews(r))); }, [shopItem.key, shopItem.reviewKey]);
   const lessons = item.lessons.filter(Boolean).length;
+  const preview = (useSearch({ strict: false }) as { preview?: boolean }).preview ? true : undefined;
   return (
     <section id={id} aria-label={heading} className="scroll-mt-24">
-      <SectionTitle action={back ? <Link to="/store/$handle" params={{ handle: store.handle }} search={{ item: undefined }} className="inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-ink"><ArrowLeft className="h-4 w-4" aria-hidden="true" />All offerings</Link> : undefined}>{heading}</SectionTitle>
+      <SectionTitle action={back ? <Link to="/store/$handle" params={{ handle: store.handle }} search={{ item: undefined, preview }} className="inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-ink"><ArrowLeft className="h-4 w-4" aria-hidden="true" />All offerings</Link> : undefined}>{heading}</SectionTitle>
       <div className="surface grid overflow-hidden sm:grid-cols-[minmax(0,280px)_1fr]">
         <ProductCover src={item.image} alt={item.title} kind={item.kind} className="aspect-square w-full" />
         <div className="flex flex-col p-5 sm:p-6">
@@ -298,7 +299,7 @@ function ItemSpotlight({ store, item, heading, back, id }: { store: PublicStore;
           <div className="mt-auto flex flex-wrap items-center gap-3 pt-5">
             <p className="text-2xl font-extrabold tabular-nums text-ink">{item.price ? naira(item.price) : "Free"}</p>
             {item.price > 0 ? (
-              back ? <BuyButton label={item.kind === "course" ? "Get started" : "Buy now"} price={naira(item.price)} item={shopItem} /> : <Link to="/store/$handle" params={{ handle: store.handle }} search={{ item: item.id }} className={cn("inline-flex h-11 items-center rounded-full px-6 text-sm font-extrabold transition-colors", accent.solid)}>View details</Link>
+              back ? <BuyButton label={item.kind === "course" ? "Get started" : "Buy now"} price={naira(item.price)} item={shopItem} /> : <Link to="/store/$handle" params={{ handle: store.handle }} search={{ item: item.id, preview }} className={cn("inline-flex h-11 items-center rounded-full px-6 text-sm font-extrabold transition-colors", accent.solid)}>View details</Link>
             ) : null}
           </div>
         </div>
