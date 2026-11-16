@@ -6,6 +6,7 @@ import { METHOD_LABEL, PROVIDERS } from "@/lib/shared/finance/coverage";
 import { refFrom, type TxRow } from "@/lib/shared/finance/history";
 import { balancesByCurrency, type Ledger } from "@/lib/shared/finance/wallet";
 import { universeSchema, initialUniverse } from "./universe/rules";
+import { builderSchema } from "./courseBuilder";
 import {
   coachingConfigSchema,
   courseConfigSchema,
@@ -37,6 +38,8 @@ export const itemSchema = z.object({
   binnedFrom: z.enum(["draft", "published", "archived"]).optional(),
   /** Only the config matching `kind` is used. */
   course: courseConfigSchema.optional(),
+  /** Course builder answers (audience, rich description, uploads, multi-currency and Pay-As-You-Go pricing). */
+  builder: builderSchema.optional(),
   download: downloadConfigSchema.optional(),
   live: liveConfigSchema.optional(),
   service: serviceConfigSchema.optional(),
