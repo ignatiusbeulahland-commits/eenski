@@ -10,6 +10,7 @@ describe("main navigation", () => {
     expect(mainNav.map((n) => n.label)).toEqual([
       "Home",
       "Dreamverse",
+      "Courses",
       "For Creators",
       "Dreamers Diary",
       "Resources",
@@ -30,6 +31,7 @@ describe("main navigation", () => {
       "Blog",
       "About Us",
       "FAQ",
+      "Verify a Certificate",
     ]);
   });
 });

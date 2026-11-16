@@ -27,6 +27,15 @@ describe("menu opens the imported pages on this site", () => {
   });
 });
 
+describe("courses and verification are reachable from the menu", () => {
+  it("Courses opens /courses", () => {
+    expect(mainNav.find((n) => n.label === "Courses")?.href).toBe("/courses");
+  });
+  it("Resources → Verify a Certificate opens /verify", () => {
+    expect(child("Resources", "Verify a Certificate")).toBe("/verify");
+  });
+});
+
 describe("Community page", () => {
   it("Resources → Community opens /community", () => {
     expect(child("Resources", "Community")).toBe("/community");
