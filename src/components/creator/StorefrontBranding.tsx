@@ -11,25 +11,20 @@ import { COVER_TYPES, readCoverFile, validateCoverFile } from "@/lib/creator/cov
 import { BANNER_SIZE, BANNER_STYLES, HEADLINE_MAX, SUBLINE_MAX, renderBanner, tidyBannerWords, type BannerStyle } from "@/lib/creator/banner";
 import { cn } from "@/lib/utils";
 
-/** Profile photo picker shared by the storefront preview and the branding panel; saves to the Creator profile. */
+/** Profile photo picker shared by the storefront preview and the branding panel; checks 1080 × 1080, crops square, saves to the Creator profile. */
 export function usePhotoPicker() {
   const { update } = useCreator();
-  const ref = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
-  const take = async (file?: File) => {
-    if (!file) return;
-    const problem = validateCoverFile(file);
-    if (problem) { toast.error(problem); return; }
-    setBusy(true);
-    try {
-      const photo = await readCoverFile(file, 480);
+  const picker = useCropPicker({
+    aspect: 1,
+    outWidth: 480,
+    round: true,
+    title: "Crop your profile photo",
+    onDone: (photo) => {
       update((s) => ({ profile: { ...s.profile, photo }, activity: [...s.activity, activityEntry("Profile photo updated")] }));
       toast.success("Profile photo updated");
-    } catch { toast.error("We couldn't read that image. Try another file."); }
-    finally { setBusy(false); if (ref.current) ref.current.value = ""; }
-  };
-  const input = <input ref={ref} type="file" accept={COVER_TYPES.join(",")} className="sr-only" tabIndex={-1} aria-hidden="true" onChange={(e) => void take(e.target.files?.[0])} />;
-  return { open: () => ref.current?.click(), busy, input };
+    },
+  });
+  return { open: picker.open, busy: picker.busy, input: picker.element };
 }
 
 /** Storefront avatar: the uploaded photo when there is one, otherwise the Creator avatar. */
@@ -107,15 +102,17 @@ export function StorefrontBranding({ photo }: { photo: ReturnType<typeof usePhot
           </div>
 
           {mode === "upload" ? (
-            <ImageUpload
-              id="store-banner-upload"
-              label="Your banner image"
-              hint={`JPG, PNG or WebP · up to 5 MB · best at ${BANNER_SIZE.width} × ${BANNER_SIZE.height}`}
-              aspect="aspect-[16/5]"
-              maxSide={1600}
-              value={sf.bannerSource === "upload" ? sf.banner : ""}
-              onChange={(v) => { saveBanner(v, v ? "upload" : "none", {}, v ? "Storefront banner uploaded" : "Storefront banner removed"); toast.success(v ? "Banner uploaded" : "Banner removed"); }}
-            />
+            <div className="space-y-3">
+              <div data-surface="dark" className="bg-brand-panel relative aspect-[3/1] w-full overflow-hidden rounded-[16px] ring-1 ring-line">
+                {sf.bannerSource === "upload" && sf.banner ? <img src={sf.banner} alt="Your banner" className="h-full w-full object-cover" /> : <span className="absolute inset-0 grid place-items-center text-sm font-bold text-on-dark-muted">No banner uploaded yet</span>}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={bannerPicker.open} disabled={bannerPicker.busy}><Upload />{sf.bannerSource === "upload" && sf.banner ? "Replace banner" : "Upload banner"}</Button>
+                {sf.bannerSource === "upload" && sf.banner && <Button type="button" variant="quiet" size="sm" onClick={() => { saveBanner("", "none", {}, "Storefront banner removed"); toast.success("Banner removed"); }}><Trash2 />Remove</Button>}
+              </div>
+              <p className="text-xs text-muted-foreground">JPG, PNG or WebP · up to 5 MB · at least 1080 × 1080 px. You'll crop it to a wide banner before it's saved.</p>
+              {bannerPicker.element}
+            </div>
           ) : (
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
