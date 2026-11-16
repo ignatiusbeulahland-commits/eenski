@@ -1,3 +1,4 @@
+import { promotionProblems } from "./coupons";
 import { z } from "zod";
 import { CURRENCY_CODES, type CurrencyCode } from "@/lib/shared/finance/currencies";
 import { beneficiaryLabel, beneficiarySchema, financePrefsSchema, maskedLast4 } from "@/lib/shared/finance/beneficiaries";
@@ -70,9 +71,16 @@ const promotionSchema = z.object({
   name: z.string(),
   code: z.string(),
   itemId: z.string(),
-  discount: z.number().finite().min(1).max(100),
+  discount: z.number().finite().positive(),
+  /** Percentage off, or a fixed naira amount off. Older coupons are percentages. */
+  discountType: z.enum(["percent", "fixed"]).default("percent"),
+  /** Maximum paid redemptions; empty means unlimited. */
+  usageLimit: z.number().int().positive().optional(),
   start: z.string(),
   end: z.string(),
+  /** Africa/Lagos clock times (HH:MM) for the start and end dates. */
+  startTime: z.string().default("00:00"),
+  endTime: z.string().default("23:59"),
   status: z.enum(["draft", "active", "paused"]),
 });
 export type Promotion = z.infer<typeof promotionSchema>;
@@ -297,23 +305,7 @@ export function validateItem(item: CreatorItem) {
   return "";
 }
 export function validatePromotion(p: Promotion, state: Pick<CreatorState, "items" | "promotions">) {
-  if (!p.name.trim() || !/^[A-Z0-9_-]+$/.test(p.code))
-    return "Add a name and a code using letters, numbers, hyphens or underscores.";
-  if (!Number.isFinite(p.discount) || p.discount < 1 || p.discount > 100)
-    return "Discount must be between 1% and 100%.";
-  if (
-    !p.start ||
-    !p.end ||
-    !Number.isFinite(Date.parse(p.start)) ||
-    !Number.isFinite(Date.parse(p.end)) ||
-    p.end < p.start
-  )
-    return "Choose a valid start and end date.";
-  if (!state.items.some((i) => i.id === p.itemId && i.status !== "archived"))
-    return "Choose an available product.";
-  if (state.promotions.some((i) => i.id !== p.id && i.code.toUpperCase() === p.code.toUpperCase()))
-    return "This coupon code is already in use.";
-  return "";
+  return Object.values(promotionProblems(p, state))[0] ?? "";
 }
 export function validateRule(r: CommissionRule, rules: CommissionRule[]) {
   if (!r.name.trim()) return "Give this rule a name.";
@@ -350,9 +342,9 @@ export function orderAmount(item: CreatorItem, promotion: Promotion | undefined,
     promotion.itemId === item.id &&
     date.slice(0, 10) >= promotion.start &&
     date.slice(0, 10) <= promotion.end;
-  return (
-    Math.round(item.price * (valid && promotion ? 1 - promotion.discount / 100 : 1) * 100) / 100
-  );
+  if (!valid || !promotion) return item.price;
+  const off = promotion.discountType === "fixed" ? promotion.discount : (item.price * promotion.discount) / 100;
+  return Math.max(0, Math.round((item.price - off) * 100) / 100);
 }
 /** Per-currency balances: paid orders earn, requested payouts are upcoming until the provider settles them. */
 export function creatorBalances(s: Pick<CreatorState, "orders" | "payouts" | "finance">) {
