@@ -2,8 +2,9 @@ import type React from "react";
 import { dashboardGreeting } from "@/lib/shared/greeting";
 import { useIdentity } from "@/lib/shared/identity";
 import { useWelcomeKind } from "@/lib/demo/useWelcome";
-import { Link } from "@tanstack/react-router";
-import { ArrowRight, Plus, Package, Eye, ShoppingBag, Banknote, Activity, UserCheck, MessageSquareText, Check, ChevronDown, UserPen, Store, Megaphone, Landmark, CalendarDays, Star, Wallet, type LucideIcon } from "lucide-react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { ArrowRight, X, Plus, Package, Eye, ShoppingBag, Banknote, Activity, UserCheck, MessageSquareText, Check, ChevronDown, UserPen, Store, Megaphone, Landmark, CalendarDays, Star, Wallet, type LucideIcon } from "lucide-react";
 import { CharmTip } from "@/components/assistant/CharmStage";
 import { StepCurtain } from "@/components/assistant/VictoryCurtain";
 import { useMilestone } from "@/lib/assistant/milestones";
@@ -69,6 +70,16 @@ export function CreatorDashboard() {
   const me = useIdentity();
   const first = me?.greet || state.profile.firstName;
   const welcome = useWelcomeKind();
+  const navigate = useNavigate();
+  const hideKey = me?.email ? `enski:creator-setup-hidden:${me.email.toLowerCase()}` : "";
+  const [setupHidden, setSetupHidden] = useState(false);
+  useEffect(() => { setSetupHidden(Boolean(hideKey) && localStorage.getItem(hideKey) === "1"); }, [hideKey]);
+  const showSetup = Boolean(next) && !setupHidden;
+  const cancelSetup = () => {
+    if (hideKey) { try { localStorage.setItem(hideKey, "1"); } catch { /* out of space */ } }
+    setSetupHidden(true);
+    navigate({ to: "/creator/settings/manage-profile" });
+  };
   // A small curtain each time another studio setup step gets done.
   const [setupCheer, clearSetupCheer] = useMilestone(me?.email ? `creator-setup:${me.email.toLowerCase()}` : undefined, done);
   const glance = [
@@ -98,7 +109,7 @@ export function CreatorDashboard() {
           {next ? `Next up: ${next.label.toLowerCase()}.` : "Buyers can now find, pay for and enjoy what you make."}
         </StepCurtain>
       )}
-      <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+      <div className={cn("mb-6 grid gap-4", showSetup && "lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]")}>
         <section className="bg-brand-panel relative isolate flex flex-col justify-center overflow-hidden rounded-3xl p-6 text-primary-foreground sm:p-8">
           <span className="hero-dots" aria-hidden="true" />
           <div aria-hidden="true" className="pointer-events-none absolute -right-2 top-4 hidden sm:block">
@@ -121,7 +132,7 @@ export function CreatorDashboard() {
             </Button>
           </div>
         </section>
-        <section className="setup-card relative isolate flex flex-col overflow-hidden rounded-3xl border border-sky-200/70 bg-ice p-5 sm:p-6" aria-labelledby="creator-setup-title">
+        {showSetup && <section className="setup-card relative isolate flex flex-col overflow-hidden rounded-3xl border border-sky-200/70 bg-ice p-5 sm:p-6" aria-labelledby="creator-setup-title">
           <div className="flex items-center gap-4">
             <div className="setup-ring relative grid h-14 w-14 shrink-0 place-items-center rounded-full" style={{ "--setup-pct": `${pct}%` } as React.CSSProperties} aria-hidden="true">
               <span className="grid h-11 w-11 place-items-center rounded-full bg-card text-sm font-extrabold tabular-nums text-cobalt">{pct}%</span>
@@ -134,6 +145,9 @@ export function CreatorDashboard() {
               <h2 id="creator-setup-title" className="mt-0.5 text-lg font-extrabold leading-tight">{next ? "Get started" : "You're all set"}</h2>
               <p className="text-xs font-semibold text-muted-foreground tabular-nums">{done} of {steps.length} steps done</p>
             </div>
+            <button type="button" onClick={cancelSetup} aria-label="Close setup and go to Manage profile" className="grid h-9 w-9 shrink-0 place-items-center self-start rounded-full text-muted-foreground transition-colors hover:bg-card hover:text-cobalt">
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
           </div>
           <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-card" role="progressbar" aria-valuenow={done} aria-valuemin={0} aria-valuemax={steps.length} aria-label="Setup progress">
             <div className="h-full rounded-full bg-gradient-to-r from-sky to-lime transition-all" style={{ width: `${pct}%` }} />
@@ -177,7 +191,8 @@ export function CreatorDashboard() {
           <Button asChild size="lg" className="mt-4 w-full">
             {next ? <Link to={next.to}>Continue setup <ArrowRight /></Link> : <Link to="/creator/storefront">Open storefront <ArrowRight /></Link>}
           </Button>
-        </section>
+          <Button type="button" variant="ghost" size="sm" className="mt-2 w-full" onClick={cancelSetup}>Cancel and update my profile</Button>
+        </section>}
       </div>
       <EarningsCard />
       <Panel title="Your studio at a glance" className="mb-6" bodyClassName="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 sm:p-5">
