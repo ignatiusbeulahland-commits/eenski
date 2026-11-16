@@ -37,6 +37,7 @@ export const initialCreatorState: CreatorState = {
   notificationsDismissed: [],
   profile: { firstName: "", lastName: "", email: "", phone: "", bio: "", photo: "" },
   storefront: { name: "", handle: "", tagline: "", about: "", published: false, banner: "", bannerSource: "none", bannerWords: { headline: "", subline: "", style: "cobalt" } },
+  storePage: { accent: "cobalt", bannerY: 50, bio: "", video: "", portfolio: "", socials: { instagram: "", youtube: "", linkedin: "", tiktok: "", x: "" }, achievements: [], featuredId: "", hiddenIds: [], order: [], testimonials: [] },
   availability: {
     timezone: "Africa/Lagos",
     buffer: 15,
