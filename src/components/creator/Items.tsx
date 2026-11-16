@@ -1,3 +1,4 @@
+import { discountLabel } from "@/lib/creator/coupons";
 import { ConfirmDialog, ConfirmNote } from "@/components/shared/BrandDialog";
 import { DialogActions } from "@/components/shared/DialogActions";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -1011,7 +1012,7 @@ function ProductOverview({
                   className="w-full sm:w-full"
                   options={[
                     ["none", "No coupon"],
-                    ...promotions.map((p) => [p.id, `${p.code} · ${p.discount}% off`] as [string, string]),
+                    ...promotions.map((p) => [p.id, `${p.code} · ${discountLabel(p)}`] as [string, string]),
                   ]}
                 />
               </>
