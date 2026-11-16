@@ -1,11 +1,11 @@
-import { LayoutDashboard, Compass, CalendarDays, Library, Bookmark, Award, ReceiptText, Settings, UserRound, Plug, Bell, LockKeyhole, BookOpenText, LifeBuoy, Globe, Globe2, type LucideIcon } from "lucide-react";
+import { LayoutDashboard, Compass, CalendarDays, CalendarClock, CalendarCheck, Library, Bookmark, Award, ReceiptText, Settings, UserRound, Plug, Bell, LockKeyhole, BookOpenText, LifeBuoy, Globe, Globe2, type LucideIcon } from "lucide-react";
 
 export const ENSKI_WEBSITE = "https://tryenski.com";
 
 /** `match` separates the two views of /learner/resources; `also` lists extra paths that keep an item active. */
 export type LearnerNavLink = {
   label: string;
-  to: "/learner/dashboard" | "/learner/resources" | "/learner/events" | "/learner/wishlist" | "/learner/certificates" | "/learner/purchases" | "/learner/guides" | "/learner/help" | "/learner/settings/profile" | "/learner/settings/integrations" | "/learner/settings/notifications" | "/learner/settings/security" | "/learner/settings/currency";
+  to: "/learner/dashboard" | "/learner/resources" | "/learner/events" | "/learner/upcoming" | "/learner/bookings" | "/learner/wishlist" | "/learner/certificates" | "/learner/purchases" | "/learner/guides" | "/learner/help" | "/learner/settings/profile" | "/learner/settings/integrations" | "/learner/settings/notifications" | "/learner/settings/security" | "/learner/settings/currency";
   icon: LucideIcon;
   search?: { view: "discover" };
   match?: "discover" | "library";
@@ -31,6 +31,8 @@ export const learnerSections: readonly { label: string; items: readonly LearnerN
       { label: "Overview", to: "/learner/dashboard", icon: LayoutDashboard },
       { label: "Discover", to: "/learner/resources", search: { view: "discover" }, match: "discover", icon: Compass },
       { label: "Events", to: "/learner/events", icon: CalendarDays },
+      { label: "Upcoming Events", to: "/learner/upcoming", icon: CalendarClock },
+      { label: "My Bookings", to: "/learner/bookings", icon: CalendarCheck },
     ],
   },
   {
