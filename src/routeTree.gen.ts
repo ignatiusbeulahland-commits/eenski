@@ -180,6 +180,7 @@ import { Route as CreatorSettingsPasswordSecurityRouteImport } from './routes/cr
 import { Route as CreatorSettingsProfileRouteImport } from './routes/creator/settings/profile'
 import { Route as CreatorSettingsSecurityRouteImport } from './routes/creator/settings/security'
 import { Route as CreatorSettingsVerificationRouteImport } from './routes/creator/settings/verification'
+import { Route as CreatorStorefrontCustomizeRouteImport } from './routes/creator/storefront_.customize'
 import { Route as CreatorWalletWithdrawRouteImport } from './routes/creator/wallet_.withdraw'
 import { Route as EbooksCreatorSlugRouteImport } from './routes/ebooks.$creator.$slug'
 import { Route as LearnerBadgesBadgeKeyRouteImport } from './routes/learner/badges.$badgeKey'
@@ -1114,6 +1115,12 @@ const CreatorSettingsVerificationRoute =
     path: '/settings/verification',
     getParentRoute: () => CreatorRouteRoute,
   } as any)
+const CreatorStorefrontCustomizeRoute =
+  CreatorStorefrontCustomizeRouteImport.update({
+    id: '/storefront_/customize',
+    path: '/storefront/customize',
+    getParentRoute: () => CreatorRouteRoute,
+  } as any)
 const CreatorWalletWithdrawRoute = CreatorWalletWithdrawRouteImport.update({
   id: '/wallet_/withdraw',
   path: '/wallet/withdraw',
@@ -1560,6 +1567,7 @@ export interface FileRoutesByFullPath {
   '/creator/settings/profile': typeof CreatorSettingsProfileRoute
   '/creator/settings/security': typeof CreatorSettingsSecurityRoute
   '/creator/settings/verification': typeof CreatorSettingsVerificationRoute
+  '/creator/storefront/customize': typeof CreatorStorefrontCustomizeRoute
   '/creator/wallet/withdraw': typeof CreatorWalletWithdrawRoute
   '/ebooks/$creator/$slug': typeof EbooksCreatorSlugRoute
   '/learner/badges/$badgeKey': typeof LearnerBadgesBadgeKeyRoute
@@ -1777,6 +1785,7 @@ export interface FileRoutesByTo {
   '/creator/settings/profile': typeof CreatorSettingsProfileRoute
   '/creator/settings/security': typeof CreatorSettingsSecurityRoute
   '/creator/settings/verification': typeof CreatorSettingsVerificationRoute
+  '/creator/storefront/customize': typeof CreatorStorefrontCustomizeRoute
   '/creator/wallet/withdraw': typeof CreatorWalletWithdrawRoute
   '/ebooks/$creator/$slug': typeof EbooksCreatorSlugRoute
   '/learner/badges/$badgeKey': typeof LearnerBadgesBadgeKeyRoute
@@ -2000,6 +2009,7 @@ export interface FileRoutesById {
   '/creator/settings/profile': typeof CreatorSettingsProfileRoute
   '/creator/settings/security': typeof CreatorSettingsSecurityRoute
   '/creator/settings/verification': typeof CreatorSettingsVerificationRoute
+  '/creator/storefront_/customize': typeof CreatorStorefrontCustomizeRoute
   '/creator/wallet_/withdraw': typeof CreatorWalletWithdrawRoute
   '/ebooks/$creator/$slug': typeof EbooksCreatorSlugRoute
   '/learner/badges/$badgeKey': typeof LearnerBadgesBadgeKeyRoute
@@ -2224,6 +2234,7 @@ export interface FileRouteTypes {
     | '/creator/settings/profile'
     | '/creator/settings/security'
     | '/creator/settings/verification'
+    | '/creator/storefront/customize'
     | '/creator/wallet/withdraw'
     | '/ebooks/$creator/$slug'
     | '/learner/badges/$badgeKey'
@@ -2441,6 +2452,7 @@ export interface FileRouteTypes {
     | '/creator/settings/profile'
     | '/creator/settings/security'
     | '/creator/settings/verification'
+    | '/creator/storefront/customize'
     | '/creator/wallet/withdraw'
     | '/ebooks/$creator/$slug'
     | '/learner/badges/$badgeKey'
@@ -2663,6 +2675,7 @@ export interface FileRouteTypes {
     | '/creator/settings/profile'
     | '/creator/settings/security'
     | '/creator/settings/verification'
+    | '/creator/storefront_/customize'
     | '/creator/wallet_/withdraw'
     | '/ebooks/$creator/$slug'
     | '/learner/badges/$badgeKey'
@@ -3960,6 +3973,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CreatorSettingsVerificationRouteImport
       parentRoute: typeof CreatorRouteRoute
     }
+    '/creator/storefront_/customize': {
+      id: '/creator/storefront_/customize'
+      path: '/storefront/customize'
+      fullPath: '/creator/storefront/customize'
+      preLoaderRoute: typeof CreatorStorefrontCustomizeRouteImport
+      parentRoute: typeof CreatorRouteRoute
+    }
     '/creator/wallet_/withdraw': {
       id: '/creator/wallet_/withdraw'
       path: '/wallet/withdraw'
@@ -4488,6 +4508,7 @@ interface CreatorRouteRouteChildren {
   CreatorSettingsProfileRoute: typeof CreatorSettingsProfileRoute
   CreatorSettingsSecurityRoute: typeof CreatorSettingsSecurityRoute
   CreatorSettingsVerificationRoute: typeof CreatorSettingsVerificationRoute
+  CreatorStorefrontCustomizeRoute: typeof CreatorStorefrontCustomizeRoute
   CreatorWalletWithdrawRoute: typeof CreatorWalletWithdrawRoute
   CreatorSettingsIndexRoute: typeof CreatorSettingsIndexRoute
   CreatorBadgesAwardsAwardIdRoute: typeof CreatorBadgesAwardsAwardIdRoute
@@ -4581,6 +4602,7 @@ const CreatorRouteRouteChildren: CreatorRouteRouteChildren = {
   CreatorSettingsProfileRoute: CreatorSettingsProfileRoute,
   CreatorSettingsSecurityRoute: CreatorSettingsSecurityRoute,
   CreatorSettingsVerificationRoute: CreatorSettingsVerificationRoute,
+  CreatorStorefrontCustomizeRoute: CreatorStorefrontCustomizeRoute,
   CreatorWalletWithdrawRoute: CreatorWalletWithdrawRoute,
   CreatorSettingsIndexRoute: CreatorSettingsIndexRoute,
   CreatorBadgesAwardsAwardIdRoute: CreatorBadgesAwardsAwardIdRoute,
