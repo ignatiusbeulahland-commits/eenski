@@ -77,7 +77,7 @@ export function PerformancePage() {
   const fx = (v: unknown, compact = false) => formatMoney(Math.round(Number(v) * 100) / 100, currency, { compact });
 
   function exportCsv() {
-    if (!tx.length) return toast.error("There are no transactions to download with these filters.");
+    if (!tx.length) { toast.error("There are no transactions to download with these filters."); return; }
     try { downloadCsv(`enski-commissions-${range}-${currency}.csv`, txCsv(tx, currency)); toast.success(`Downloaded ${tx.length} transactions.`); }
     catch { toast.error("The download didn't start. Please try again."); }
   }
