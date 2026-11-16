@@ -1,4 +1,4 @@
-import { discountLabel } from "@/lib/creator/coupons";
+import { couponPhase, discountLabel } from "@/lib/creator/coupons";
 import { ConfirmDialog, ConfirmNote } from "@/components/shared/BrandDialog";
 import { DialogActions } from "@/components/shared/DialogActions";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -703,7 +703,7 @@ function ProductOverview({
   const questions = kind === "service" ? service.requirements : kind === "coaching" ? coaching.intake : [];
   const today = new Date().toISOString().slice(0, 10);
   const promotions = state.promotions.filter(
-    (p) => p.itemId === id && p.status === "active" && today >= p.start && today <= p.end,
+    (p) => p.itemId === id && couponPhase(p, state.orders.filter((o) => o.promotionId === p.id && o.status === "paid").length) === "active",
   );
   const selected = promotions.find((p) => p.id === promo);
   const base =
