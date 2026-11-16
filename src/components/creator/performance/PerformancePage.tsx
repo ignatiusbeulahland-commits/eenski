@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Area, Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { BadgePercent, BookOpenCheck, ChevronLeft, ChevronRight, Download, Package, Receipt, Wallet, LineChart as LineIcon } from "lucide-react";
+import { BadgePercent, ChevronLeft, ChevronRight, Download, Package, Receipt, LineChart as LineIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/dashboard-ui/button";
 import { Input } from "@/components/dashboard-ui/input";
