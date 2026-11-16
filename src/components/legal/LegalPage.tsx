@@ -17,7 +17,7 @@ function Inline({ text }: { text: string }) {
         if (p.startsWith("**")) return <strong key={i} className="font-bold text-ink">{p.slice(2, -2)}</strong>;
         const m = p.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
         if (m) {
-          const ext = /^https?:/.test(m[2]);
+          const ext = /^https?:/.test(m[2] ?? "");
           return (
             <a key={i} href={m[2]} className="font-semibold text-brand underline underline-offset-2 hover:no-underline" {...(ext ? { target: "_blank", rel: "noreferrer" } : {})}>
               {m[1]}
