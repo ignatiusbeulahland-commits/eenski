@@ -1,30 +1,86 @@
-# The Enski Platform
+Enski
 
-Redesign this https://staging.tryenski.com/ , use these two as styleninspo make sure they match make sure no fake images or ai generated use realistic ones
+Learn. Grow. Earn.
 
-https://tryenski-com.lovable.app
+Enski is a digital learning and creator platform designed to help people discover learning opportunities, develop practical skills, connect with coaches and creators, and turn their knowledge into income.
 
-Using this as brand guidelines 
+The platform brings learning, coaching, digital products, events, bookings, and creator opportunities together in one ecosystem.
 
-https://enski-brand-guide.netlify.app/
+About the Project
 
-This project was built with [Lovable](https://lovable.dev).
+Enski aims to make learning more accessible, practical, and rewarding by connecting learners with the resources, people, and opportunities they need to grow.
 
-## Build with Lovable
+The platform is designed around three key experiences:
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/d61df967-12b9-4ee5-a9b5-fab252267afc).
+- Learn: Discover courses, ebooks, learning resources, and educational content.
+- Grow: Connect with coaches, attend live sessions, join events, and develop practical skills.
+- Earn: Explore gigs, creator opportunities, bookings, and ways to monetize skills and knowledge.
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+Key Features
 
-## Development
+- Learner dashboard
+- Course discovery and learning interfaces
+- Digital products and ebooks marketplace
+- Coaching and mentorship experiences
+- Upcoming events and live sessions
+- Booking and scheduling interfaces
+- Coupons and promotional experiences
+- Creator and facilitator experiences
+- User profiles and dashboards
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Project Status
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
+Development Stage: Prototype
+
+Enski is currently a frontend prototype created to demonstrate the platform's user experience, interface design, and intended functionality.
+
+Some features use simulated data and interactions. The prototype does not currently represent a fully integrated production system.
+
+Backend services, database integrations, authentication, payment processing, and other production functionality may require further development.
+
+Technology
+
+The project uses modern web development tools and technologies.
+
+- Frontend: [Add framework used]
+- UI/UX Design: Figma
+- Development: Lovable
+- Version Control: GitHub
+
+Update this section with the exact technologies and dependencies used in the repository.
+
+Getting Started
+
+To explore the project locally:
+
+1. Clone the repository.
+
+git clone YOUR_REPOSITORY_URL
+
+2. Navigate into the project folder.
+
+cd enski
+
+3. Install dependencies.
+
+npm install
+
+4. Start the development server.
+
 npm run dev
-```
+
+Live Preview
+
+"Visit Enski" (https://eenski.lovable.app)
+
+Disclaimer
+
+Enski is a prototype project developed to demonstrate a digital learning and creator ecosystem. Features and workflows shown in the prototype may not yet be connected to live backend services.
+
+Vision
+
+To create an ecosystem where people can learn valuable skills, access opportunities, connect with the right people, and build sustainable income through their knowledge and creativity.
+
+---
+
+Enski — Learn. Grow. Earn.
