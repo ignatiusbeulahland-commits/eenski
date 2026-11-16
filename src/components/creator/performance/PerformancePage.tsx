@@ -14,6 +14,7 @@ import {
   revenueSeries, sampleSales, statusText, summary, topProducts, txCsv, type PerfCurrency, type PerfRange, type TxFilters, type CommissionStatus,
 } from "@/lib/creator/performance";
 import { downloadCsv } from "../shared";
+import { currencySymbol, formatMoney } from "@/lib/shared/finance/currencies";
 import { cn } from "@/lib/utils";
 
 const tipStyle = { background: "var(--card)", borderColor: "var(--line)", borderRadius: 12, color: "var(--foreground)", fontSize: 12 };
@@ -71,10 +72,9 @@ export function PerformancePage() {
   const pages = Math.max(1, Math.ceil(tx.length / PAGE));
   const cur = Math.min(page, pages - 1);
   const rows = tx.slice(cur * PAGE, cur * PAGE + PAGE);
-  const sym = PERF_CURRENCIES.find((c) => c.code === currency)!.label;
   const products = [...new Set(sales.map((x) => x.product))].sort();
   const setFilter = (p: Partial<TxFilters>) => { setF((o) => ({ ...o, ...p })); setPage(0); };
-  const short = (n: number) => money(n / (currency === "NGN" ? 1 : convert(1, currency) / convert(1, currency)), currency, true);
+  const fx = (v: unknown, compact = false) => formatMoney(Math.round(Number(v) * 100) / 100, currency, { compact });
 
   function exportCsv() {
     if (!tx.length) return toast.error("There are no transactions to download with these filters.");
@@ -103,7 +103,7 @@ export function PerformancePage() {
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Metric icon={BookOpenCheck} label="Total enrolments" value={s.enrolments.toLocaleString()} lines={[`${PERF_RANGES.find((r) => r.key === range)!.label === "All" ? "All time" : `Last ${range} days`}`]} tone="bg-ice text-cobalt" />
+        <Metric icon={BookOpenCheck} label="Total enrolments" value={s.enrolments.toLocaleString()} lines={[range === "all" ? "All time" : `Last ${range} days`]} tone="bg-ice text-cobalt" />
         <Metric icon={Wallet} label="Total revenue" value={money(s.net, currency)} lines={[`Gross: ${money(s.gross, currency)}`, `Refunded: ${money(s.refunded, currency)}`]} tone="bg-ice text-sky-text" />
         <Metric icon={BadgePercent} label="Average commission" value={money(s.avgCommission, currency)} lines={[`Paid: ${money(s.commPaid, currency)}`, s.waiting ? `${s.waiting} more waiting to settle` : "Nothing waiting to settle"]} tone="bg-lime text-midnight" />
         <Metric icon={Package} label="Products published" value={String(s.published)} lines={["Across all product types"]} tone="bg-midnight text-lime" />
@@ -116,9 +116,9 @@ export function PerformancePage() {
               <LineChart data={series} margin={{ top: 10, right: 4, left: 0, bottom: 0 }}>
                 <CartesianGrid stroke="var(--line)" vertical={false} />
                 <XAxis dataKey="label" tick={axis} minTickGap={24} tickLine={false} />
-                <YAxis yAxisId="rev" width={56} tick={axis} tickLine={false} axisLine={false} tickFormatter={(v) => short(Number(v) / (currency === "NGN" ? 1 : convert(1, currency)))} />
+                <YAxis yAxisId="rev" width={56} tick={axis} tickLine={false} axisLine={false} tickFormatter={(v) => fx(v, true)} />
                 <YAxis yAxisId="sales" orientation="right" width={30} tick={axis} tickLine={false} axisLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={tipStyle} formatter={(v, n) => (n === "Total earnings" ? [money(Number(v) / convert(1, currency), currency), n] : [`${v} sale${Number(v) === 1 ? "" : "s"}`, n])} />
+                <Tooltip contentStyle={tipStyle} formatter={(v, n) => (n === "Total earnings" ? [fx(v), n] : [`${v} sale${Number(v) === 1 ? "" : "s"}`, n])} />
                 <Legend wrapperStyle={{ fontSize: 12, cursor: "pointer" }} onClick={(e) => { const k = String((e as { dataKey?: unknown }).dataKey); setHidden((h) => ({ ...h, [k]: !h[k] })); }}
                   formatter={(v, e) => <span style={{ color: hidden[String((e as { dataKey?: unknown }).dataKey)] ? "var(--muted-foreground)" : "var(--foreground)", textDecoration: hidden[String((e as { dataKey?: unknown }).dataKey)] ? "line-through" : "none" }}>{v}</span>} />
                 <Line yAxisId="rev" type="monotone" dataKey="revenue" name="Total earnings" stroke="var(--cobalt)" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} hide={!!hidden["revenue"]} animationDuration={500} />
@@ -154,7 +154,7 @@ export function PerformancePage() {
           ) : <EmptyState icon={Package} title="No product sales yet" description="Your best sellers will be ranked here." compact />}
         </Panel>
 
-        <Panel title={`Commission breakdown (${sym.split(" ")[1]?.replace(/[()]/g, "")})`} description="Commission earned each month">
+        <Panel title={`Commission breakdown (${currencySymbol(currency)})`} description="Commission earned each month">
           {months.length ? (
             <>
               <div className="mb-4 flex flex-wrap gap-2 text-xs">
@@ -166,8 +166,8 @@ export function PerformancePage() {
                   <BarChart data={months} margin={{ top: 10, right: 4, left: 0, bottom: 0 }}>
                     <CartesianGrid stroke="var(--line)" vertical={false} />
                     <XAxis dataKey="short" tick={axis} tickLine={false} />
-                    <YAxis width={56} tick={axis} tickLine={false} axisLine={false} tickFormatter={(v) => money(Number(v) / convert(1, currency), currency, true)} />
-                    <Tooltip cursor={{ fill: "var(--ice)" }} contentStyle={tipStyle} labelFormatter={(_, p) => (p?.[0]?.payload as { label?: string })?.label ?? ""} formatter={(v) => [money(Number(v) / convert(1, currency), currency), "Commission"]} />
+                    <YAxis width={56} tick={axis} tickLine={false} axisLine={false} tickFormatter={(v) => fx(v, true)} />
+                    <Tooltip cursor={{ fill: "var(--ice)" }} contentStyle={tipStyle} labelFormatter={(_, p) => (p?.[0]?.payload as { label?: string })?.label ?? ""} formatter={(v) => [fx(v), "Commission"]} />
                     <Bar dataKey="value" fill="var(--cobalt)" radius={[6, 6, 0, 0]} maxBarSize={48} animationDuration={500} />
                   </BarChart>
                 </ResponsiveContainer>
