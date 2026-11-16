@@ -1,10 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { Link, Outlet } from "@tanstack/react-router";
-import { ArrowLeft, Award, Bell, BookOpen, FileBadge2, LayoutDashboard, LifeBuoy, LogOut, Menu, Receipt, Settings, ShieldCheck, Users, Wallet, X } from "lucide-react";
+import { ArrowLeft, Award, Bell, BookOpen, FileBadge2, Flag, LayoutDashboard, LifeBuoy, LogOut, Menu, Receipt, Settings, ShieldCheck, Users, Wallet, X } from "lucide-react";
 import logoWhite from "@/assets/enski-logo-white.webp";
 import { Button } from "@/components/dashboard-ui/button";
 import { Input } from "@/components/dashboard-ui/input";
 import { Label } from "@/components/dashboard-ui/label";
+import { adminStore } from "@/lib/admin/store";
 import { adminSession, useAdminSession } from "@/lib/admin/session";
 import { validEmail } from "@/lib/shared/credentials";
 import { useDeviceData, useNotifications } from "./data";
@@ -15,6 +16,7 @@ export function AdminShell() {
   const [menu, setMenu] = useState(false);
   const data = useDeviceData();
   const notes = useNotifications(data);
+  const reports = (adminStore.use().reports ?? []).filter((r) => r.status === "open").length;
   if (!me) return <AdminSignIn />;
 
   const links = [
@@ -27,6 +29,7 @@ export function AdminShell() {
     { label: "Payouts", to: "/admin/payouts", Icon: Wallet, count: data?.payouts.filter((p) => p.status === "processing").length ?? 0 },
     { label: "Notifications", to: "/admin/notifications", Icon: Bell, count: notes.unread },
     { label: "Support requests", to: "/admin/support", Icon: LifeBuoy, count: 0 },
+    { label: "Page reports", to: "/admin/reports", Icon: Flag, count: reports },
     { label: "Settings", to: "/admin/settings", Icon: Settings, count: 0 },
   ] as const;
 
