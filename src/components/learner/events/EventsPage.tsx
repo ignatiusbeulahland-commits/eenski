@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { EmptyState, PageHeader, SearchInput, StatusBadge } from "@/components/affiliate/ui";
 import { Button } from "@/components/dashboard-ui/button";
 import { Input } from "@/components/dashboard-ui/input";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/dashboard-ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard-ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/dashboard-ui/tabs";
 import { categories, type Category } from "@/lib/affiliate/products";
@@ -82,16 +83,16 @@ export function EventsPage() {
       </section>
 
       <section aria-label="Filter events" className="surface mb-5 p-3 sm:p-4">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-end">
           <div className="min-w-0 lg:w-72"><span className="mb-1 block text-xs font-bold text-muted-foreground" aria-hidden="true">Search</span><SearchInput value={f.q} onChange={(v) => set("q", v)} placeholder="Search events or hosts" /></div>
           <div className="grid flex-1 grid-cols-2 gap-2 sm:grid-cols-4">
-            <LabeledSelect label="Date" value={f.date} onChange={(v) => setF((cur) => ({ ...cur, date: v as DateFilter, on: v === "on" ? cur.on : "" }))} options={dateOptions} />
+            <DatePickerButton value={f.date} on={f.on} onApply={(date, on) => setF((cur) => ({ ...cur, date, on: date === "on" ? on : "" }))} />
             <LabeledSelect label="Price" value={f.price} onChange={(v) => set("price", v as PriceFilter)} options={priceOptions} />
             <LabeledSelect label="Format" value={f.format} onChange={(v) => set("format", v as FormatFilter)} options={formatOptions} />
             <LabeledSelect label="Sort by" value={sort} onChange={setSort} options={[["soonest", "Date: soonest"], ["latest", "Date: latest"], ["price", "Price: low to high"]]} />
           </div>
-          <PreviewSwitch value={show} onChange={setShow} liveLabel="Live events" liveCount={publishedEvents.length} previewCount={allPreviews.length} className="lg:w-56" />
-          <div className="grid grid-cols-2 gap-1 rounded-full border bg-soft p-1 lg:inline-grid" role="group" aria-label="View events as">
+          <PreviewSwitch value={show} onChange={setShow} liveLabel="Live events" liveCount={publishedEvents.length} previewCount={allPreviews.length} className="xl:w-56" />
+          <div className="grid grid-cols-2 gap-1 rounded-full border bg-soft p-1 xl:inline-grid" role="group" aria-label="View events as">
             {([["grid", "Grid", LayoutGrid], ["calendar", "Calendar", CalendarRange]] as const).map(([v, label, Icon]) => (
               <button key={v} type="button" onClick={() => setLayout(v)} aria-pressed={layout === v} className={cn("inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-4 text-sm font-bold transition-colors", layout === v ? "bg-cobalt text-primary-foreground" : "text-muted-foreground hover:text-cobalt")}>
                 <Icon className="h-4 w-4" aria-hidden="true" />{label}
@@ -99,12 +100,6 @@ export function EventsPage() {
             ))}
           </div>
         </div>
-        {f.date === "on" && (
-          <label className="mt-3 block max-w-xs">
-            <span className="mb-1 block text-xs font-bold text-muted-foreground">Event date</span>
-            <Input type="date" value={f.on} onChange={(e) => set("on", e.target.value)} className="bg-card" />
-          </label>
-        )}
         <div className="mt-3 flex flex-wrap items-center gap-2" aria-live="polite">
           <p className="text-sm font-semibold text-muted-foreground">
             {upcoming.length} upcoming {upcoming.length === 1 ? "event" : "events"}
@@ -222,5 +217,44 @@ function PastEventRow({ e, tz }: { e: LearnerEvent; tz: string }) {
         <span className="inline-flex items-center text-[13px] font-extrabold text-cobalt" aria-hidden="true">Read recap<ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" /></span>
       </div>
     </RowShell>
+  );
+}
+
+function DatePickerButton({ value, on, onApply }: { value: DateFilter; on: string; onApply: (d: DateFilter, on: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [d, setD] = useState<DateFilter>(value);
+  const [day, setDay] = useState(on);
+  const label = value === "on" && on ? on : dateOptions.find(([v]) => v === value)?.[1] ?? "Any date";
+  const openIt = () => { setD(value); setDay(on); setOpen(true); };
+  return (
+    <div className="min-w-0">
+      <span className="mb-1 block text-xs font-bold text-muted-foreground" aria-hidden="true">Date</span>
+      <button type="button" onClick={openIt} aria-label={`Date: ${label}`} className="flex h-10 w-full items-center gap-2 rounded-md border bg-card px-3 text-left text-sm">
+        <CalendarDays className="h-4 w-4 shrink-0 text-cobalt" aria-hidden="true" /><span className="truncate">{label}</span>
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Choose a date</DialogTitle>
+            <DialogDescription>Show events happening when it suits you.</DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-2">
+            {dateOptions.map(([v, l]) => (
+              <button key={v} type="button" aria-pressed={d === v} onClick={() => setD(v)} className={cn("min-h-11 rounded-xl border px-3 text-sm font-bold transition-colors", d === v ? "border-cobalt bg-cobalt text-primary-foreground" : "bg-card hover:border-cobalt")}>{l}</button>
+            ))}
+          </div>
+          {d === "on" && (
+            <label className="block">
+              <span className="mb-1 block text-xs font-bold text-muted-foreground">Event date</span>
+              <Input type="date" value={day} onChange={(e) => setDay(e.target.value)} className="bg-card" />
+            </label>
+          )}
+          <DialogFooter className="grid grid-cols-2 gap-2 sm:flex">
+            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button disabled={d === "on" && !day} onClick={() => { onApply(d, day); setOpen(false); }}>Apply</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
