@@ -41,7 +41,7 @@ export function OfferCard({ item, shopItem, accent }: { item: CreatorItem; shopI
   const cart = useCartAdd(shopItem);
   return (
     <article className="surface group relative flex min-w-0 flex-col overflow-hidden">
-      <ShopLink item={shopItem} className="block focus-visible:outline-none">
+      <ShopLink route={shopItem.route} aria-label={item.title} className="block focus-visible:outline-none">
         <ProductCover src={item.image} alt={item.title} kind={item.kind} className="aspect-square w-full" imgClassName="transition-transform duration-500 group-hover:scale-105" />
         <span className="absolute inset-0" aria-hidden="true" />
       </ShopLink>
