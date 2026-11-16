@@ -78,7 +78,7 @@ export function StorefrontBranding({ photo }: { photo: ReturnType<typeof usePhot
           </div>
           <div className="min-w-0">
             <p className="text-[13px] font-bold">Profile photo</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">Square images work best. Also shows on your profile.</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">At least 1080 × 1080 px. You can crop it before saving. Also shows on your profile.</p>
             <div className="mt-2.5 flex flex-wrap gap-2">
               <Button type="button" size="sm" variant="outline" onClick={photo.open} disabled={photo.busy}><Camera />{hasPhoto ? "Change photo" : "Upload photo"}</Button>
               {hasPhoto && (
