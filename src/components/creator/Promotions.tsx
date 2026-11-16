@@ -205,7 +205,7 @@ export function CouponsPage() {
       {!list.length && (
         <Panel>
           <EmptyState
-            icon={BadgePercent}
+            icon={Percent}
             title={inTab.length ? "No matching coupons" : tab === "active" ? "No active coupons" : "No inactive coupons"}
             description={inTab.length ? "Try another search or filter." : tab === "active" ? "Create a coupon to reward your audience. It shows here while it's running." : "Scheduled, expired and deactivated coupons will show here."}
             action={inTab.length ? <Button variant="outline" onClick={() => { setQ(""); setFilter("all"); }}>Clear filters</Button> : tab === "active" ? create : undefined}
