@@ -214,7 +214,7 @@ export function DreamersPage() {
           {productLinks.map((p, i) => {
             const k = KINDS[i]!;
             return (
-              <Link key={p.to} to={p.to} className={cn(i === 4 && "col-span-2 sm:col-span-1 lg:col-span-1")} data-x="" style={undefined}>{null}</Link> flex items-center gap-3 p-4 transition hover:-translate-y-0.5 hover:border-cobalt-100 hover:shadow-md focus-visible:outline-2 focus-visible:outline-cobalt">
+              <Link key={p.to} to={p.to} className={cn("surface group flex items-center gap-3 p-4 transition hover:-translate-y-0.5 hover:border-cobalt-100 hover:shadow-md focus-visible:outline-2 focus-visible:outline-cobalt", i === 4 && "col-span-2 sm:col-span-1")}>
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-ice text-cobalt transition group-hover:bg-cobalt group-hover:text-primary-foreground"><p.icon className="h-5 w-5" /></span>
                 <span className="min-w-0"><span className="block text-xl font-bold tabular-nums text-ink">{productCount(k)}</span><span className="block truncate text-xs text-muted-foreground">{k === "coaching" ? "Consultations / coaching" : kindInfo[k].plural}</span></span>
               </Link>
