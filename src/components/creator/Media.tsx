@@ -2,7 +2,7 @@ import { ConfirmDialog, ConfirmNote } from "@/components/shared/BrandDialog";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useRef, useState, type ReactNode } from "react";
 import {
-  Check, Clock, Download, Eye, FileText, Film, GraduationCap, HardDrive, Image as ImageIcon, LayoutGrid, List, Loader2, Maximize2, Music, Pencil, Ruler, Trash2, Upload, UploadCloud,
+  Check, Clock, Download, Eye, FileText, Film, GraduationCap, HardDrive, Image as ImageIcon, LayoutGrid, List, Loader2, Maximize2, Music, Pencil, Ruler, Trash2, Upload, UploadCloud, X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -150,7 +150,7 @@ function TypeChip({ file }: { file: MediaFile }) {
   return <span className="inline-flex items-center gap-1 rounded-full bg-midnight/80 px-2 py-0.5 text-[11px] font-extrabold text-on-dark backdrop-blur"><Icon className="h-3 w-3 text-lime" />{typeSingle[file.type]}</span>;
 }
 
-type Upload = { id: string; name: string; progress: number; done: boolean };
+type Upload = { id: string; name: string; progress: number; done: boolean; error?: string };
 
 // ---------- Library ----------
 export function MediaLibrary() {
@@ -159,6 +159,7 @@ export function MediaLibrary() {
   const [q, setQ] = useState("");
   const [type, setType] = useState<"all" | MediaKind>("all");
   const [sort, setSort] = useState("new");
+  const [added, setAdded] = useState<"any" | "7" | "30" | "365">("any");
   const [view, setView] = useState<"grid" | "list">("grid");
   const [selected, setSelected] = useState<string[]>([]);
   const [confirmBulk, setConfirmBulk] = useState(false);
@@ -168,7 +169,7 @@ export function MediaLibrary() {
 
   const usage = new Map(state.media.map((m) => [m.id, mediaUsage(state.items, m.id).length]));
   const list = state.media
-    .filter((m) => m.name.toLowerCase().includes(q.trim().toLowerCase()) && (type === "all" || m.type === type))
+    .filter((m) => m.name.toLowerCase().includes(q.trim().toLowerCase()) && (type === "all" || m.type === type) && (added === "any" || Date.now() - new Date(m.date).getTime() <= Number(added) * 86400000))
     .slice()
     .reverse()
     .sort((x, y) => (sort === "name" ? x.name.localeCompare(y.name) : sort === "size" ? y.size - x.size : sort === "old" ? x.date.localeCompare(y.date) : 0));
@@ -184,7 +185,9 @@ export function MediaLibrary() {
     if (!picked.length) return;
     const problems = picked.map(mediaProblem).filter(Boolean) as string[];
     const ok = picked.filter((f) => !mediaProblem(f));
+    const failed: Upload[] = picked.filter((f) => mediaProblem(f)).map((f) => ({ id: crypto.randomUUID(), name: f.name, progress: 100, done: true, error: mediaProblem(f) ?? "This file can't be added." }));
     const queue = ok.map((f) => ({ id: crypto.randomUUID(), name: f.name, progress: 6, done: false }));
+    if (failed.length) { setUploads((u) => [...failed, ...u]); setTimeout(() => setUploads((u) => u.filter((x) => !failed.some((f) => f.id === x.id))), 7000); }
     setUploads((u) => [...queue, ...u.filter((x) => !x.done)]);
     const added: MediaFile[] = [];
     for (const [n, f] of ok.entries()) {
@@ -202,7 +205,7 @@ export function MediaLibrary() {
     if (added.length) {
       update((s) => ({ media: [...s.media, ...added], activity: [...s.activity, activityEntry(`Added ${added.length} file${added.length === 1 ? "" : "s"} to Media Library`)] }));
       toast.success(`${added.length} file${added.length === 1 ? "" : "s"} added`);
-      setTimeout(() => setUploads((u) => u.filter((x) => !x.done)), 1800);
+      setTimeout(() => setUploads((u) => u.filter((x) => !x.done || x.error)), 1800);
     }
     if (problems.length) toast.error(`${problems.length} file${problems.length === 1 ? "" : "s"} skipped`, { description: problems.slice(0, 2).join(" ") });
     if (input.current) input.current.value = "";
@@ -251,17 +254,17 @@ export function MediaLibrary() {
         <section className="surface mb-5 overflow-hidden" aria-live="polite" aria-label="Uploads">
           <header className="flex items-center justify-between border-b px-4 py-3">
             <p className="flex items-center gap-2 text-sm font-extrabold"><span className="lime-tick" aria-hidden="true" />Uploading</p>
-            <span className="text-xs font-bold tabular-nums text-muted-foreground">{uploads.filter((u) => u.done).length} of {uploads.length} done</span>
+            <span className="text-xs font-bold tabular-nums text-muted-foreground">{uploads.filter((u) => u.done && !u.error).length} of {uploads.length} added</span>
           </header>
           <ul className="divide-y">
             {uploads.map((u) => (
               <li key={u.id} className="flex items-center gap-3 px-4 py-3">
-                <span className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-full", u.done ? "bg-lime text-midnight" : "bg-ice text-cobalt")}>{u.done ? <Check className="h-4 w-4" strokeWidth={3} /> : <Loader2 className="h-4 w-4 animate-spin" />}</span>
+                <span className={cn("grid h-8 w-8 shrink-0 place-items-center rounded-full", u.error ? "bg-destructive/10 text-destructive" : u.done ? "bg-lime text-midnight" : "bg-ice text-cobalt")}>{u.error ? <X className="h-4 w-4" strokeWidth={3} /> : u.done ? <Check className="h-4 w-4" strokeWidth={3} /> : <Loader2 className="h-4 w-4 animate-spin" />}</span>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-bold">{u.name}</p>
-                  <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-soft"><div className={cn("h-full rounded-full transition-[width] duration-500", u.done ? "bg-lime" : "bg-cobalt")} style={{ width: `${u.progress}%` }} /></div>
+                  {u.error ? <p className="mt-0.5 text-xs font-semibold text-destructive">{u.error}</p> : <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-soft"><div className={cn("h-full rounded-full transition-[width] duration-500", u.done ? "bg-lime" : "bg-cobalt")} style={{ width: `${u.progress}%` }} /></div>}
                 </div>
-                <span className="w-16 shrink-0 text-right text-xs font-bold text-muted-foreground">{u.done ? "Added" : `${u.progress}%`}</span>
+                <span className="w-16 shrink-0 text-right text-xs font-bold text-muted-foreground">{u.error ? "Skipped" : u.done ? "Added" : `${u.progress}%`}</span>
               </li>
             ))}
           </ul>
@@ -302,8 +305,9 @@ export function MediaLibrary() {
             </div>
             <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
               <SearchInput value={q} onChange={setQ} placeholder="Search files" />
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <FilterSelect label="File type" className="flex-1 md:hidden" value={type} onChange={(v) => setType(v as typeof type)} options={filters.map(([v, l, n]) => [v, `${l} (${n})`] as [string, string])} />
+                <FilterSelect label="Date added" className="flex-1 sm:flex-none" value={added} onChange={(v) => setAdded(v as typeof added)} options={[["any", "Any date"], ["7", "Last 7 days"], ["30", "Last 30 days"], ["365", "Last year"]]} />
                 <FilterSelect label="Sort by" className="flex-1 sm:flex-none" value={sort} onChange={setSort} options={[["new", "Newest first"], ["old", "Oldest first"], ["name", "Name A–Z"], ["size", "Largest first"]]} />
                 <div className="inline-flex shrink-0 rounded-full border bg-card p-1" role="group" aria-label="View">
                   {([["grid", LayoutGrid, "Grid view"], ["list", List, "List view"]] as const).map(([v, I, l]) => (
@@ -379,7 +383,7 @@ export function MediaLibrary() {
           )}
           {!list.length && (
             <Panel>
-              <EmptyState icon={Upload} title="No matching files" description="Try another search or file type." action={<Button variant="outline" onClick={() => { setQ(""); setType("all"); }}>Clear filters</Button>} />
+              <EmptyState icon={Upload} title="No matching files" description="Try another search or file type." action={<Button variant="outline" onClick={() => { setQ(""); setType("all"); setAdded("any"); }}>Clear filters</Button>} />
             </Panel>
           )}
 
