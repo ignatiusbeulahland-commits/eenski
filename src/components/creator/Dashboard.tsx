@@ -18,7 +18,7 @@ import {
 import { Panel, EmptyState } from "@/components/affiliate/ui";
 import { BrandIcon, SemanticIcon, brandArtwork } from "@/components/affiliate/BrandIcon";
 import { useCreator } from "@/lib/creator/store";
-import { totalEarnings, availableBalance, averageRating, KINDS } from "@/lib/creator/rules";
+import { creatorBalances, totalEarnings, availableBalance, averageRating, KINDS } from "@/lib/creator/rules";
 import { kindInfo } from "@/lib/creator/data";
 import { naira } from "@/lib/affiliate/products";
 import { cn } from "@/lib/utils";
@@ -179,6 +179,7 @@ export function CreatorDashboard() {
           </Button>
         </section>
       </div>
+      <EarningsCard />
       <Panel title="Your studio at a glance" className="mb-6" bodyClassName="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 sm:p-5">
         {glance.map((g) => (
           <Link key={g.label} to={g.to} className="group flex min-w-0 items-center gap-3 rounded-2xl border bg-card p-3 transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-sky/60 hover:shadow-[0_10px_24px_-18px_var(--cobalt)]" aria-label={`${g.label}: ${g.value}. ${g.hint}`}>
@@ -306,5 +307,49 @@ export function CreatorDashboard() {
         </div>
       </div>
     </div>
+  );
+}
+
+function EarningsCard() {
+  const { state } = useCreator();
+  const ngn = creatorBalances(state).find((b) => b.currency === "NGN");
+  const total = totalEarnings(state);
+  const available = availableBalance(state);
+  const withdrawn = state.payouts.filter((p) => p.status === "successful").reduce((n, p) => n + p.amount, 0);
+  const pending = state.payouts.filter((p) => p.status !== "failed" && p.status !== "successful").reduce((n, p) => n + p.amount, 0);
+  const sales = state.orders.filter((o) => o.status === "paid").length;
+  const small = [
+    { icon: Wallet, label: "Available to withdraw", value: naira(ngn?.available ?? available) },
+    { icon: Activity, label: "Withdrawal in progress", value: naira(pending) },
+    { icon: Landmark, label: "Total withdrawn", value: naira(withdrawn) },
+    { icon: ShoppingBag, label: "Paid sales", value: String(sales) },
+  ];
+  return (
+    <section aria-labelledby="earnings-title" className="mb-6 rounded-3xl border bg-card p-5 sm:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-4">
+          <BrandIcon src={brandArtwork.cash} className="h-14 w-14 shrink-0" />
+          <div className="min-w-0">
+            <p id="earnings-title" className="text-xs font-extrabold uppercase tracking-[0.14em] text-cobalt">Total earnings</p>
+            <p className="truncate text-3xl font-extrabold tabular-nums sm:text-4xl">{naira(total)}</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-2 sm:flex">
+          <Button asChild size="lg" variant="lime"><Link to="/creator/wallet/withdraw">Withdraw</Link></Button>
+          <Button asChild size="lg" variant="outline"><Link to="/creator/wallet">View wallet</Link></Button>
+        </div>
+      </div>
+      <ul className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {small.map((c) => (
+          <li key={c.label} className="flex min-w-0 items-center gap-3 rounded-2xl border bg-soft p-3">
+            <SemanticIcon icon={c.icon} className="h-9 w-9 shrink-0" fallbackClassName="h-5 w-5 text-cobalt" />
+            <div className="min-w-0">
+              <p className="truncate text-base font-extrabold tabular-nums">{c.value}</p>
+              <p className="truncate text-xs font-semibold text-muted-foreground">{c.label}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

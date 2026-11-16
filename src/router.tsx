@@ -1,7 +1,7 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import { PageSkeleton } from "./components/site/PageSkeleton";
+import { RoutePending } from "./components/site/RoutePending";
 
 export const getRouter = () => {
   const queryClient = new QueryClient();
@@ -14,7 +14,7 @@ export const getRouter = () => {
     defaultViewTransition: true,
     defaultPreloadStaleTime: 0,
     // Slow page changes show a light placeholder (quick ones only get the top loading bar).
-    defaultPendingComponent: () => <PageSkeleton />,
+    defaultPendingComponent: () => <RoutePending />,
     defaultPendingMs: 500,
     defaultPendingMinMs: 300,
   });
