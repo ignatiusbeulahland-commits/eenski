@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Camera, Check, ImagePlus, Loader2, PenLine, Trash2, Upload, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/dashboard-ui/button";
@@ -7,7 +7,7 @@ import { Field } from "@/components/affiliate/Field";
 import { useCropPicker } from "./CropPicker";
 import { CreatorAvatar } from "./Header";
 import { useCreator, activityEntry } from "@/lib/creator/store";
-import { BANNER_SIZE, BANNER_STYLES, HEADLINE_MAX, SUBLINE_MAX, renderBanner, tidyBannerWords, type BannerStyle } from "@/lib/creator/banner";
+import { BANNER_STYLES, HEADLINE_MAX, SUBLINE_MAX, renderBanner, tidyBannerWords, type BannerStyle } from "@/lib/creator/banner";
 import { cn } from "@/lib/utils";
 
 /** Profile photo picker shared by the storefront preview and the branding panel; checks 1080 × 1080, crops square, saves to the Creator profile. */
