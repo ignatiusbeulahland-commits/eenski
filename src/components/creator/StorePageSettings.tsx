@@ -43,7 +43,7 @@ export function StorePageSettings() {
 
   const save = () => {
     const bad = [...SOCIALS.map((s) => p.socials[s.key]), p.portfolio, p.video].find((u) => u.trim() && !safeUrl(u));
-    if (bad) return toast.error("One of your links isn't a web address", { description: bad });
+    if (bad) { toast.error("One of your links isn't a web address", { description: bad }); return; }
     update((s) => ({ storePage: { ...p, achievements: p.achievements.filter((a) => a.title.trim()), testimonials: p.testimonials.filter((t) => t.quote.trim() && t.name.trim()) }, activity: [...s.activity, activityEntry("Creator page updated")] }));
     toast.success("Creator page saved");
   };
