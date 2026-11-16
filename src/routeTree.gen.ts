@@ -98,6 +98,7 @@ import { Route as CreatorWalletRouteImport } from './routes/creator/wallet'
 import { Route as CreatorsSlugRouteImport } from './routes/creators.$slug'
 import { Route as DreamverseSlugRouteImport } from './routes/dreamverse_.$slug'
 import { Route as LearnerIndexRouteImport } from './routes/learner/index'
+import { Route as LearnerBookingsRouteImport } from './routes/learner/bookings'
 import { Route as LearnerCartRouteImport } from './routes/learner/cart'
 import { Route as LearnerCertificatesRouteImport } from './routes/learner/certificates'
 import { Route as LearnerCheckoutRouteImport } from './routes/learner/checkout'
@@ -107,6 +108,7 @@ import { Route as LearnerGuidesRouteImport } from './routes/learner/guides'
 import { Route as LearnerHelpRouteImport } from './routes/learner/help'
 import { Route as LearnerPurchasesRouteImport } from './routes/learner/purchases'
 import { Route as LearnerResourcesRouteImport } from './routes/learner/resources'
+import { Route as LearnerUpcomingRouteImport } from './routes/learner/upcoming'
 import { Route as LearnerWishlistRouteImport } from './routes/learner/wishlist'
 import { Route as OrdersReferenceRouteImport } from './routes/orders.$reference'
 import { Route as StoreHandleRouteImport } from './routes/store.$handle'
@@ -672,6 +674,11 @@ const LearnerIndexRoute = LearnerIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LearnerRouteRoute,
 } as any)
+const LearnerBookingsRoute = LearnerBookingsRouteImport.update({
+  id: '/bookings',
+  path: '/bookings',
+  getParentRoute: () => LearnerRouteRoute,
+} as any)
 const LearnerCartRoute = LearnerCartRouteImport.update({
   id: '/cart',
   path: '/cart',
@@ -715,6 +722,11 @@ const LearnerPurchasesRoute = LearnerPurchasesRouteImport.update({
 const LearnerResourcesRoute = LearnerResourcesRouteImport.update({
   id: '/resources',
   path: '/resources',
+  getParentRoute: () => LearnerRouteRoute,
+} as any)
+const LearnerUpcomingRoute = LearnerUpcomingRouteImport.update({
+  id: '/upcoming',
+  path: '/upcoming',
   getParentRoute: () => LearnerRouteRoute,
 } as any)
 const LearnerWishlistRoute = LearnerWishlistRouteImport.update({
@@ -1450,6 +1462,7 @@ export interface FileRoutesByFullPath {
   '/creator/wallet': typeof CreatorWalletRoute
   '/creators/$slug': typeof CreatorsSlugRoute
   '/dreamverse/$slug': typeof DreamverseSlugRoute
+  '/learner/bookings': typeof LearnerBookingsRoute
   '/learner/cart': typeof LearnerCartRoute
   '/learner/certificates': typeof LearnerCertificatesRoute
   '/learner/checkout': typeof LearnerCheckoutRoute
@@ -1459,6 +1472,7 @@ export interface FileRoutesByFullPath {
   '/learner/help': typeof LearnerHelpRoute
   '/learner/purchases': typeof LearnerPurchasesRoute
   '/learner/resources': typeof LearnerResourcesRoute
+  '/learner/upcoming': typeof LearnerUpcomingRoute
   '/learner/wishlist': typeof LearnerWishlistRoute
   '/orders/$reference': typeof OrdersReferenceRoute
   '/store/$handle': typeof StoreHandleRoute
@@ -1663,6 +1677,7 @@ export interface FileRoutesByTo {
   '/creator/wallet': typeof CreatorWalletRoute
   '/creators/$slug': typeof CreatorsSlugRoute
   '/dreamverse/$slug': typeof DreamverseSlugRoute
+  '/learner/bookings': typeof LearnerBookingsRoute
   '/learner/cart': typeof LearnerCartRoute
   '/learner/certificates': typeof LearnerCertificatesRoute
   '/learner/checkout': typeof LearnerCheckoutRoute
@@ -1672,6 +1687,7 @@ export interface FileRoutesByTo {
   '/learner/help': typeof LearnerHelpRoute
   '/learner/purchases': typeof LearnerPurchasesRoute
   '/learner/resources': typeof LearnerResourcesRoute
+  '/learner/upcoming': typeof LearnerUpcomingRoute
   '/learner/wishlist': typeof LearnerWishlistRoute
   '/orders/$reference': typeof OrdersReferenceRoute
   '/store/$handle': typeof StoreHandleRoute
@@ -1882,6 +1898,7 @@ export interface FileRoutesById {
   '/creator/wallet': typeof CreatorWalletRoute
   '/creators/$slug': typeof CreatorsSlugRoute
   '/dreamverse_/$slug': typeof DreamverseSlugRoute
+  '/learner/bookings': typeof LearnerBookingsRoute
   '/learner/cart': typeof LearnerCartRoute
   '/learner/certificates': typeof LearnerCertificatesRoute
   '/learner/checkout': typeof LearnerCheckoutRoute
@@ -1891,6 +1908,7 @@ export interface FileRoutesById {
   '/learner/help': typeof LearnerHelpRoute
   '/learner/purchases': typeof LearnerPurchasesRoute
   '/learner/resources': typeof LearnerResourcesRoute
+  '/learner/upcoming': typeof LearnerUpcomingRoute
   '/learner/wishlist': typeof LearnerWishlistRoute
   '/orders/$reference': typeof OrdersReferenceRoute
   '/store/$handle': typeof StoreHandleRoute
@@ -2102,6 +2120,7 @@ export interface FileRouteTypes {
     | '/creator/wallet'
     | '/creators/$slug'
     | '/dreamverse/$slug'
+    | '/learner/bookings'
     | '/learner/cart'
     | '/learner/certificates'
     | '/learner/checkout'
@@ -2111,6 +2130,7 @@ export interface FileRouteTypes {
     | '/learner/help'
     | '/learner/purchases'
     | '/learner/resources'
+    | '/learner/upcoming'
     | '/learner/wishlist'
     | '/orders/$reference'
     | '/store/$handle'
@@ -2315,6 +2335,7 @@ export interface FileRouteTypes {
     | '/creator/wallet'
     | '/creators/$slug'
     | '/dreamverse/$slug'
+    | '/learner/bookings'
     | '/learner/cart'
     | '/learner/certificates'
     | '/learner/checkout'
@@ -2324,6 +2345,7 @@ export interface FileRouteTypes {
     | '/learner/help'
     | '/learner/purchases'
     | '/learner/resources'
+    | '/learner/upcoming'
     | '/learner/wishlist'
     | '/orders/$reference'
     | '/store/$handle'
@@ -2533,6 +2555,7 @@ export interface FileRouteTypes {
     | '/creator/wallet'
     | '/creators/$slug'
     | '/dreamverse_/$slug'
+    | '/learner/bookings'
     | '/learner/cart'
     | '/learner/certificates'
     | '/learner/checkout'
@@ -2542,6 +2565,7 @@ export interface FileRouteTypes {
     | '/learner/help'
     | '/learner/purchases'
     | '/learner/resources'
+    | '/learner/upcoming'
     | '/learner/wishlist'
     | '/orders/$reference'
     | '/store/$handle'
@@ -3337,6 +3361,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnerIndexRouteImport
       parentRoute: typeof LearnerRouteRoute
     }
+    '/learner/bookings': {
+      id: '/learner/bookings'
+      path: '/bookings'
+      fullPath: '/learner/bookings'
+      preLoaderRoute: typeof LearnerBookingsRouteImport
+      parentRoute: typeof LearnerRouteRoute
+    }
     '/learner/cart': {
       id: '/learner/cart'
       path: '/cart'
@@ -3398,6 +3429,13 @@ declare module '@tanstack/react-router' {
       path: '/resources'
       fullPath: '/learner/resources'
       preLoaderRoute: typeof LearnerResourcesRouteImport
+      parentRoute: typeof LearnerRouteRoute
+    }
+    '/learner/upcoming': {
+      id: '/learner/upcoming'
+      path: '/upcoming'
+      fullPath: '/learner/upcoming'
+      preLoaderRoute: typeof LearnerUpcomingRouteImport
       parentRoute: typeof LearnerRouteRoute
     }
     '/learner/wishlist': {
@@ -4531,6 +4569,7 @@ const CreatorRouteRouteWithChildren = CreatorRouteRoute._addFileChildren(
 )
 
 interface LearnerRouteRouteChildren {
+  LearnerBookingsRoute: typeof LearnerBookingsRoute
   LearnerCartRoute: typeof LearnerCartRoute
   LearnerCertificatesRoute: typeof LearnerCertificatesRoute
   LearnerCheckoutRoute: typeof LearnerCheckoutRoute
@@ -4540,6 +4579,7 @@ interface LearnerRouteRouteChildren {
   LearnerHelpRoute: typeof LearnerHelpRoute
   LearnerPurchasesRoute: typeof LearnerPurchasesRoute
   LearnerResourcesRoute: typeof LearnerResourcesRoute
+  LearnerUpcomingRoute: typeof LearnerUpcomingRoute
   LearnerWishlistRoute: typeof LearnerWishlistRoute
   LearnerIndexRoute: typeof LearnerIndexRoute
   LearnerBadgesBadgeKeyRoute: typeof LearnerBadgesBadgeKeyRoute
@@ -4568,6 +4608,7 @@ interface LearnerRouteRouteChildren {
 }
 
 const LearnerRouteRouteChildren: LearnerRouteRouteChildren = {
+  LearnerBookingsRoute: LearnerBookingsRoute,
   LearnerCartRoute: LearnerCartRoute,
   LearnerCertificatesRoute: LearnerCertificatesRoute,
   LearnerCheckoutRoute: LearnerCheckoutRoute,
@@ -4577,6 +4618,7 @@ const LearnerRouteRouteChildren: LearnerRouteRouteChildren = {
   LearnerHelpRoute: LearnerHelpRoute,
   LearnerPurchasesRoute: LearnerPurchasesRoute,
   LearnerResourcesRoute: LearnerResourcesRoute,
+  LearnerUpcomingRoute: LearnerUpcomingRoute,
   LearnerWishlistRoute: LearnerWishlistRoute,
   LearnerIndexRoute: LearnerIndexRoute,
   LearnerBadgesBadgeKeyRoute: LearnerBadgesBadgeKeyRoute,
