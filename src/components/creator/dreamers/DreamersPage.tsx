@@ -253,7 +253,7 @@ export function DreamersPage() {
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <ChannelDonut data={CHANNELS.map((c) => ({ c, value: tPoints.reduce((n, pt) => n + Number((pt as Record<string, unknown>)[c] ?? 0), 0) }))} fmt={(v) => fmt(metric, v)} />
+            <ChannelDonut data={CHANNELS.map((c) => ({ c, value: tPoints.reduce((n, pt) => n + Number((pt as unknown as Record<string, unknown>)[c] ?? 0), 0) }))} fmt={(v) => fmt(metric, v)} />
             </div>
           </div>
         </Panel>
