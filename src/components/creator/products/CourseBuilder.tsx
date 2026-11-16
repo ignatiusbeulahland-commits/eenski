@@ -401,7 +401,7 @@ function StepMore({ b, patch, err }: { b: Builder; patch: (p: Partial<Builder>) 
       <CreateSection n={6} id="cb-community" title="Community" text="Invite learners to a group where they can ask questions and connect." optional>
         <div className="grid gap-4 sm:grid-cols-[200px_1fr]">
           <CreateField id="cb-community-platform" label="Community platform" error={err("cb-community-platform")}>
-            <Select value={b.community.platform || undefined} onValueChange={(v) => patch({ community: { ...b.community, platform: v as Builder["community"]["platform"] } })}>
+            <Select value={b.community.platform} onValueChange={(v) => patch({ community: { ...b.community, platform: v as Builder["community"]["platform"] } })}>
               <SelectTrigger id="cb-community-platform" className="h-11 bg-card font-bold" aria-label="Community platform"><SelectValue placeholder="Choose" /></SelectTrigger>
               <SelectContent>{COMMUNITY_PLATFORMS.map((p) => <SelectItem key={p} value={p}>{COMMUNITY_LABEL[p]}</SelectItem>)}</SelectContent>
             </Select>
