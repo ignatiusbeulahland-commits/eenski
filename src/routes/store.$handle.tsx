@@ -15,7 +15,7 @@ export const Route = createFileRoute("/store/$handle")({
     const sample = params.handle.toLowerCase() === SAMPLE_HANDLE;
     const name = sample ? SAMPLE_CREATOR.name : params.handle;
     const description = sample ? SAMPLE_CREATOR.about : "Follow this creator and explore their courses, digital downloads, coaching and live sessions on Enski.";
-    const image = sample ? `${SITE_ORIGIN}${SAMPLE_CREATOR.banner}` : null;
+    const image = sample && SAMPLE_CREATOR.banner ? `${SITE_ORIGIN}${SAMPLE_CREATOR.banner}` : null;
     return {
       meta: [
         { title: `${name} — Creator page on Enski` },

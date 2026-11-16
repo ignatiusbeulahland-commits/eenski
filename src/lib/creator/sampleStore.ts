@@ -61,8 +61,8 @@ export const SAMPLE_CREATOR = {
   owner: "Sample Creator",
   tagline: "Brand design courses, guides and coaching",
   about: "Helping small businesses look as good as they are. A sample page showing how Enski storefronts work.",
-  photo: img("avatar-fw8okajxfpax.webp"),
-  banner: img("course-qkodrpp685kz.webp"),
+  photo: "",
+  banner: "",
 };
 
 export function samplePage(): CreatorState["storePage"] {
