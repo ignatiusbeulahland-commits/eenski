@@ -74,6 +74,7 @@ export type NavItem = { label: string; href?: string; path?: string; children?: 
 export const mainNav: NavItem[] = [
   { label: "Home", href: "/", path: "/" },
   { label: "Dreamverse", href: "/dreamverse", path: "/dreamverse" },
+  { label: "Courses", href: "/courses", path: "/courses" },
   {
     label: "For Creators",
     children: [
@@ -89,6 +90,7 @@ export const mainNav: NavItem[] = [
       { label: "Blog", href: links.blog, description: "Insights, guides and stories" },
       { label: "About Us", href: links.about, description: "Our story and mission" },
       { label: "FAQ", href: links.faq, description: "Answers to common questions" },
+      { label: "Verify a Certificate", href: "/verify", description: "Check an Enski certificate or badge ID" },
     ],
   },
   { label: "Become An Ambassador", href: links.ambassador, path: "/become-an-ambassador" },

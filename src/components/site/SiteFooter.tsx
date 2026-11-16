@@ -13,6 +13,7 @@ const columns = [
       { l: "Explore courses", h: "/courses" },
       { l: "Dreamers Trybe", h: links.community },
       { l: "Dreamers Diary", h: "/#dreamers-diary" },
+      { l: "Verify a certificate", h: "/verify" },
     ],
   },
   {
@@ -31,6 +32,7 @@ const columns = [
     title: "Company",
     items: [
       { l: "About us", h: links.about },
+      { l: "Blog", h: links.blog },
       { l: "Community", h: links.communityInfo },
       { l: "Insights", h: "/#insights" },
       { l: "FAQ", h: links.faq },
