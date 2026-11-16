@@ -82,8 +82,9 @@ export function sampleDreamers(now = Date.now(), count = 72): Dreamer[] {
 
 /** Real dreamers from the creator's saved customers and paid orders. */
 export function realDreamers(state: Pick<CreatorState, "customers" | "orders" | "items">): Dreamer[] {
-  const kindOf = (id: string) => state.items.find((i) => i.id === id)?.kind ?? "course";
-  const titleOf = (id: string) => state.items.find((i) => i.id === id)?.title ?? "Product";
+  const sampleOf = (id: string) => (id.startsWith("sample:") ? SAMPLE_PRODUCTS[Number(id.slice(7))] : undefined);
+  const kindOf = (id: string) => state.items.find((i) => i.id === id)?.kind ?? sampleOf(id)?.kind ?? "course";
+  const titleOf = (id: string) => state.items.find((i) => i.id === id)?.title ?? sampleOf(id)?.title ?? "Product";
   return state.customers.map((c: Customer) => {
     const paid = state.orders.filter((o) => o.customerId === c.id && o.status === "paid");
     const purchases: Purchase[] = paid.map((o) => ({ title: o.itemTitle, kind: kindOf(o.itemId), amount: o.amount, date: o.date }));
