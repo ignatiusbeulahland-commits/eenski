@@ -1,0 +1,3 @@
+# Routes
+
+- Every course/eBook card opens an on-site details page. Live Enski courses have exactly one public page, `/courses/$slug` (Enski slug), built from the saved Enski course snapshot via `lib/marketplace/data.ts` (published + Dreamverse-approved only; outlines only, never lesson videos or files); `/dreamverse/$slug` redirects there for them. Homepage showcase courses not on Enski keep `/courses/$slug` via `productSlug`; other Dreamverse listings use `/dreamverse/$slug` (`productKey`). Enroll/buy opens the simulated demo checkout. Why: no duplicate course pages, and no paid content is ever included.

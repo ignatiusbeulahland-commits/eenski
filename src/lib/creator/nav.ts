@@ -1,0 +1,85 @@
+import { BrandMark } from "@/components/shared/BrandMark";
+import {
+  LayoutDashboard,
+  MessageSquareText,
+  Store,
+  Shapes,
+  SquarePlay,
+  FileText,
+  MonitorPlay,
+  Wrench,
+  UsersRound,
+  Database,
+  Wallet,
+  UserCheck,
+  BadgePercent,
+  Handshake,
+  Users,
+  Megaphone,
+  ListChecks,
+  ChartColumn,
+
+  ShoppingBag,
+  Settings,
+  UserRound,
+  Palette,
+  Landmark,
+  ShieldCheck,
+  CalendarClock,
+  Plug,
+  Bell,
+  LockKeyhole,
+  BookOpenText,
+  LifeBuoy,
+  Globe2,
+  Stamp,
+  Medal,
+} from "lucide-react";
+export const productLinks = [
+  { label: "Courses", to: "/creator/courses", icon: SquarePlay },
+  { label: "Digital Downloads", to: "/creator/ebooks", icon: FileText },
+  { label: "Live Sessions", to: "/creator/live-trainings", icon: MonitorPlay },
+  { label: "Services", to: "/creator/services", icon: Wrench },
+  { label: "Coaching", to: "/creator/coaching", icon: UsersRound },
+] as const;
+export const affiliateLinks = [
+  { label: "Affiliates", to: "/creator/affiliates", icon: Users },
+  { label: "Ongoing Promotions", to: "/creator/affiliations", icon: Megaphone },
+  { label: "Commission Rules", to: "/creator/commission-rules", icon: ListChecks },
+] as const;
+export const creatorSettings = [
+  { label: "Manage Profile", to: "/creator/settings/manage-profile", icon: UserRound },
+  { label: "Character Preferences", to: "/creator/settings/character", icon: Palette },
+  { label: "Bank Account Details", to: "/creator/settings/bank-accounts", icon: Landmark },
+  { label: "Country & Currency", to: "/creator/settings/currency", icon: Globe2 },
+  { label: "Verification", to: "/creator/settings/verification", icon: ShieldCheck },
+  { label: "Availability", to: "/creator/settings/availability", icon: CalendarClock },
+  { label: "Certificate Branding", to: "/creator/settings/certificate-branding", icon: Stamp },
+  { label: "Integrations", to: "/creator/settings/integrations", icon: Plug },
+  { label: "Notifications", to: "/creator/settings/notifications", icon: Bell },
+  { label: "Password & Security", to: "/creator/settings/password-security", icon: LockKeyhole },
+] as const;
+/** Mirrors the staging facilitator navigation order. */
+export const creatorNav = [
+  { label: "Overview", to: "/creator/dashboard", icon: LayoutDashboard },
+  { label: "Reviews", to: "/creator/reviews", icon: MessageSquareText },
+  { label: "Storefront", to: "/creator/storefront", icon: Store },
+  { label: "Manage Products", icon: Shapes, children: productLinks },
+  { label: "Bookings & Sessions", to: "/creator/bookings", icon: CalendarClock },
+  { label: "Media Library", to: "/creator/media-library", icon: Database },
+  { label: "Wallet / Payouts", to: "/creator/wallet", icon: Wallet },
+  { label: "Dreamers / Subscribers", to: "/creator/subscribers", icon: UserCheck },
+  { label: "Coupons / Discounts", to: "/creator/coupons", icon: BadgePercent },
+  { label: "Affiliates", icon: Handshake, children: affiliateLinks },
+  { label: "Performance", to: "/creator/performance", icon: ChartColumn },
+  { label: "Badges & Certificates", to: "/creator/badges", icon: Medal },
+  { label: "Creator Universe", to: "/creator/milestones", icon: BrandMark },
+  { label: "Landing Pages", to: "/creator/landing-pages", icon: ShoppingBag },
+  { label: "Settings", icon: Settings, children: creatorSettings },
+  { label: "Guides", to: "/creator/guides", icon: BookOpenText },
+  { label: "Help", to: "/creator/help", icon: LifeBuoy },
+] as const;
+export type CreatorNavLink = Extract<(typeof creatorNav)[number], { to: string }> | (typeof productLinks)[number] | (typeof affiliateLinks)[number] | (typeof creatorSettings)[number];
+export const creatorLinks: CreatorNavLink[] = creatorNav.flatMap<CreatorNavLink>((n) =>
+  "children" in n ? [...n.children] : [n],
+);
