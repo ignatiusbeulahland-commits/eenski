@@ -257,6 +257,8 @@ export const stateSchema = z.object({
       bannerY: z.number().min(0).max(100).default(50),
       bio: z.string().default(""),
       video: z.string().default(""),
+      /** File name when the welcome video was uploaded (then `video` is `vault:<id>`). */
+      videoName: z.string().default(""),
       portfolio: z.string().default(""),
       socials: z.object({ instagram: z.string(), youtube: z.string(), linkedin: z.string(), tiktok: z.string(), x: z.string() }).default({ instagram: "", youtube: "", linkedin: "", tiktok: "", x: "" }),
       achievements: z.array(z.object({ id: z.string(), title: z.string(), detail: z.string() })).default([]),
@@ -265,7 +267,7 @@ export const stateSchema = z.object({
       order: z.array(z.string()).default([]),
       testimonials: z.array(z.object({ id: z.string(), name: z.string(), quote: z.string(), itemId: z.string(), rating: z.number().int().min(1).max(5) })).default([]),
     })
-    .default({ accent: "cobalt", bannerY: 50, bio: "", video: "", portfolio: "", socials: { instagram: "", youtube: "", linkedin: "", tiktok: "", x: "" }, achievements: [], featuredId: "", hiddenIds: [], order: [], testimonials: [] }),
+    .default({ accent: "cobalt", bannerY: 50, bio: "", video: "", videoName: "", portfolio: "", socials: { instagram: "", youtube: "", linkedin: "", tiktok: "", x: "" }, achievements: [], featuredId: "", hiddenIds: [], order: [], testimonials: [] }),
   availability: z
     .object({
       timezone: z.string(),
