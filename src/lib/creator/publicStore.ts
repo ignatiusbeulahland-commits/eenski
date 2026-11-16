@@ -3,6 +3,7 @@ import type { PaymentRecord } from "@/lib/shop/payments";
 import type { ShopItem } from "@/lib/shop/types";
 import { STORAGE_KEY } from "./data";
 import { stateSchema, type CreatorItem, type CreatorState } from "./rules";
+import { SAMPLE_CREATOR, SAMPLE_HANDLE, sampleItems, samplePage, withSamplePage } from "./sampleStore";
 
 /**
  * Public storefronts for creators who signed up on this device: their published
@@ -22,6 +23,10 @@ export type PublicStore = {
   page: CreatorState["storePage"];
   verified: boolean;
   bio: string;
+  /** Sample page shown to everyone, or a creator's preview with sample products switched on. */
+  sample?: boolean;
+  /** True when the creator hasn't made the page visible yet (only reachable as a preview). */
+  hidden?: boolean;
 };
 
 const PAGE_DEFAULT = stateSchema.shape.storePage.parse(undefined);
@@ -32,10 +37,12 @@ export function orderedItems(items: CreatorItem[], page: Pick<CreatorState["stor
   return items.filter((i) => !page.hiddenIds.includes(i.id)).map((it, n) => ({ it, n })).sort((a, b) => rank(a.it.id) - rank(b.it.id) || a.n - b.n).map((x) => x.it);
 }
 
-const TYPE_LABEL: Record<CreatorItem["kind"], string> = { course: "Course", ebook: "eBook", live: "Live session", service: "Service", coaching: "Coaching" };
+/** Same words as the Manage Products menu. */
+export const TYPE_LABEL: Record<CreatorItem["kind"], string> = { course: "Course", ebook: "Digital Download", live: "Live Session", service: "Service", coaching: "Coaching" };
+export const TYPE_PLURAL: Record<CreatorItem["kind"], string> = { course: "Courses", ebook: "Digital Downloads", live: "Live Sessions", service: "Services", coaching: "Coaching" };
 const PREFIX = `${STORAGE_KEY}:`;
 
-function readAll(): PublicStore[] {
+function readAll(includeHidden = false): PublicStore[] {
   if (typeof window === "undefined") return [];
   const out: PublicStore[] = [];
   for (let i = 0; i < localStorage.length; i++) {
@@ -44,7 +51,7 @@ function readAll(): PublicStore[] {
     try {
       const s = JSON.parse(localStorage.getItem(key) ?? "null") as Partial<CreatorState> | null;
       const f = s?.storefront;
-      if (!f?.handle || !f.published) continue;
+      if (!f?.handle || (!f.published && !includeHidden)) continue;
       out.push({
         key,
         handle: f.handle.toLowerCase(),
@@ -58,6 +65,7 @@ function readAll(): PublicStore[] {
         page: stateSchema.shape.storePage.safeParse(s?.storePage).data ?? PAGE_DEFAULT,
         verified: s?.verification === "submitted",
         bio: s?.profile?.bio ?? "",
+        hidden: !f.published,
       });
     } catch {
       /* unreadable record: skip */
@@ -66,7 +74,30 @@ function readAll(): PublicStore[] {
   return out;
 }
 
-export const findStore = (handle: string) => readAll().find((s) => s.handle === handle.trim().toLowerCase()) ?? null;
+/** The sample creator page: opens in any browser so a storefront link can always be tried. */
+export function sampleStore(): PublicStore {
+  return { key: "sample", ...SAMPLE_CREATOR, items: sampleItems(), page: samplePage(), verified: true, bio: "", sample: true };
+}
+
+/** A creator's page as visitors see it; `preview` also opens it while hidden (for its owner's preview). */
+export function findStore(handle: string, opts: { preview?: boolean } = {}): PublicStore | null {
+  const h = handle.trim().toLowerCase();
+  const own = readAll(opts.preview).find((s) => s.handle === h);
+  if (own) return own;
+  return h === SAMPLE_HANDLE ? sampleStore() : null;
+}
+
+/** Unsaved page changes shared with the preview window, so it updates as the creator edits. */
+export const draftKey = (handle: string) => `enski:store-draft:${handle.trim().toLowerCase()}`;
+export type StoreDraft = { page: CreatorState["storePage"]; sample: boolean };
+
+/** Applies the creator's unsaved draft (and sample products, when switched on) to their page. */
+export function applyDraft(store: PublicStore, draft: StoreDraft | null): PublicStore {
+  if (!draft) return store;
+  const page = stateSchema.shape.storePage.safeParse(draft.page).data ?? store.page;
+  if (!draft.sample) return { ...store, page };
+  return { ...store, page: withSamplePage(page), items: [...store.items, ...sampleItems()], sample: true, bio: store.bio, about: store.about || SAMPLE_CREATOR.about, tagline: store.tagline || SAMPLE_CREATOR.tagline, banner: store.banner || SAMPLE_CREATOR.banner };
+}
 
 export const storeItemKey = (handle: string, itemId: string) => `store:${handle}:${itemId}`;
 

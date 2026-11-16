@@ -27,7 +27,6 @@ export function sampleItems(now = new Date()): CreatorItem[] {
   return raw.map((r) => itemSchema.parse({
     description: "", category: "", status: "published", image: "", lessons: [], date: r.kind === "live" ? nextDate(now, 12) : "", capacity: 0, createdAt: "2026-01-01T00:00:00.000Z",
     ...r,
-    ...(r.kind === "live" ? { date: nextDate(now, 12) } : {}),
   }));
 }
 
