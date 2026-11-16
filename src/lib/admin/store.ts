@@ -4,7 +4,7 @@ import { localStore } from "@/lib/assistant/persist";
 export type AdminSettings = { platformName: string; supportEmail: string; marketplaceOpen: boolean; newSignups: boolean; payoutReview: boolean; minPayout: number };
 export const REPORT_REASONS = ["Misleading or false claims", "Copied content", "Scam or fraud", "Offensive content", "Something else"] as const;
 export type ReportReason = (typeof REPORT_REASONS)[number];
-export type PageReport = { id: string; at: string; handle: string; storeName: string; reason: ReportReason; details: string; email: string; status: "open" | "reviewed"; reviewedAt?: string };
+export type PageReport = { id: string; at: string; handle: string; storeName: string; reason: ReportReason; details: string; email: string; status: "open" | "reviewed"; reviewedAt?: string | undefined };
 export type AdminState = {
   reports?: PageReport[];
   suspended: Record<string, { at: string; reason: string; by: string }>;
