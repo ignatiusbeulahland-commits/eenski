@@ -219,6 +219,7 @@ import { Route as CreatorWalletBeneficiariesNewRouteImport } from './routes/crea
 import { Route as CreatorWalletTransactionsTxIdRouteImport } from './routes/creator/wallet_.transactions.$txId'
 import { Route as CreatorWalletWithdrawalsWithdrawalIdRouteImport } from './routes/creator/wallet_.withdrawals.$withdrawalId'
 import { Route as LearnerCertificatesCertificateIdReadyRouteImport } from './routes/learner/certificates_.$certificateId_.ready'
+import { Route as LearnerEventsEventIdRegisterRouteImport } from './routes/learner/events_.$eventId_.register'
 import { Route as LearnerHelpConversationsThreadIdRouteImport } from './routes/learner/help_.conversations.$threadId'
 import { Route as LearnerHelpRequestsTicketIdRouteImport } from './routes/learner/help_.requests_.$ticketId'
 import { Route as LearnerHelpTopicsTopicIdRouteImport } from './routes/learner/help_.topics.$topicId'
@@ -1329,6 +1330,12 @@ const LearnerCertificatesCertificateIdReadyRoute =
     path: '/certificates/$certificateId/ready',
     getParentRoute: () => LearnerRouteRoute,
   } as any)
+const LearnerEventsEventIdRegisterRoute =
+  LearnerEventsEventIdRegisterRouteImport.update({
+    id: '/events_/$eventId_/register',
+    path: '/events/$eventId/register',
+    getParentRoute: () => LearnerRouteRoute,
+  } as any)
 const LearnerHelpConversationsThreadIdRoute =
   LearnerHelpConversationsThreadIdRouteImport.update({
     id: '/help_/conversations/$threadId',
@@ -1589,6 +1596,7 @@ export interface FileRoutesByFullPath {
   '/creator/wallet/transactions/$txId': typeof CreatorWalletTransactionsTxIdRoute
   '/creator/wallet/withdrawals/$withdrawalId': typeof CreatorWalletWithdrawalsWithdrawalIdRoute
   '/learner/certificates/$certificateId/ready': typeof LearnerCertificatesCertificateIdReadyRoute
+  '/learner/events/$eventId/register': typeof LearnerEventsEventIdRegisterRoute
   '/learner/help/conversations/$threadId': typeof LearnerHelpConversationsThreadIdRoute
   '/learner/help/requests/$ticketId': typeof LearnerHelpRequestsTicketIdRoute
   '/learner/help/topics/$topicId': typeof LearnerHelpTopicsTopicIdRoute
@@ -1804,6 +1812,7 @@ export interface FileRoutesByTo {
   '/creator/wallet/transactions/$txId': typeof CreatorWalletTransactionsTxIdRoute
   '/creator/wallet/withdrawals/$withdrawalId': typeof CreatorWalletWithdrawalsWithdrawalIdRoute
   '/learner/certificates/$certificateId/ready': typeof LearnerCertificatesCertificateIdReadyRoute
+  '/learner/events/$eventId/register': typeof LearnerEventsEventIdRegisterRoute
   '/learner/help/conversations/$threadId': typeof LearnerHelpConversationsThreadIdRoute
   '/learner/help/requests/$ticketId': typeof LearnerHelpRequestsTicketIdRoute
   '/learner/help/topics/$topicId': typeof LearnerHelpTopicsTopicIdRoute
@@ -2025,6 +2034,7 @@ export interface FileRoutesById {
   '/creator/wallet_/transactions/$txId': typeof CreatorWalletTransactionsTxIdRoute
   '/creator/wallet_/withdrawals/$withdrawalId': typeof CreatorWalletWithdrawalsWithdrawalIdRoute
   '/learner/certificates_/$certificateId_/ready': typeof LearnerCertificatesCertificateIdReadyRoute
+  '/learner/events_/$eventId_/register': typeof LearnerEventsEventIdRegisterRoute
   '/learner/help_/conversations/$threadId': typeof LearnerHelpConversationsThreadIdRoute
   '/learner/help_/requests_/$ticketId': typeof LearnerHelpRequestsTicketIdRoute
   '/learner/help_/topics/$topicId': typeof LearnerHelpTopicsTopicIdRoute
@@ -2247,6 +2257,7 @@ export interface FileRouteTypes {
     | '/creator/wallet/transactions/$txId'
     | '/creator/wallet/withdrawals/$withdrawalId'
     | '/learner/certificates/$certificateId/ready'
+    | '/learner/events/$eventId/register'
     | '/learner/help/conversations/$threadId'
     | '/learner/help/requests/$ticketId'
     | '/learner/help/topics/$topicId'
@@ -2462,6 +2473,7 @@ export interface FileRouteTypes {
     | '/creator/wallet/transactions/$txId'
     | '/creator/wallet/withdrawals/$withdrawalId'
     | '/learner/certificates/$certificateId/ready'
+    | '/learner/events/$eventId/register'
     | '/learner/help/conversations/$threadId'
     | '/learner/help/requests/$ticketId'
     | '/learner/help/topics/$topicId'
@@ -2682,6 +2694,7 @@ export interface FileRouteTypes {
     | '/creator/wallet_/transactions/$txId'
     | '/creator/wallet_/withdrawals/$withdrawalId'
     | '/learner/certificates_/$certificateId_/ready'
+    | '/learner/events_/$eventId_/register'
     | '/learner/help_/conversations/$threadId'
     | '/learner/help_/requests_/$ticketId'
     | '/learner/help_/topics/$topicId'
@@ -4208,6 +4221,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LearnerCertificatesCertificateIdReadyRouteImport
       parentRoute: typeof LearnerRouteRoute
     }
+    '/learner/events_/$eventId_/register': {
+      id: '/learner/events_/$eventId_/register'
+      path: '/events/$eventId/register'
+      fullPath: '/learner/events/$eventId/register'
+      preLoaderRoute: typeof LearnerEventsEventIdRegisterRouteImport
+      parentRoute: typeof LearnerRouteRoute
+    }
     '/learner/help_/conversations/$threadId': {
       id: '/learner/help_/conversations/$threadId'
       path: '/help/conversations/$threadId'
@@ -4600,6 +4620,7 @@ interface LearnerRouteRouteChildren {
   LearnerSettingsSecurityRoute: typeof LearnerSettingsSecurityRoute
   LearnerSettingsIndexRoute: typeof LearnerSettingsIndexRoute
   LearnerCertificatesCertificateIdReadyRoute: typeof LearnerCertificatesCertificateIdReadyRoute
+  LearnerEventsEventIdRegisterRoute: typeof LearnerEventsEventIdRegisterRoute
   LearnerHelpConversationsThreadIdRoute: typeof LearnerHelpConversationsThreadIdRoute
   LearnerHelpRequestsTicketIdRoute: typeof LearnerHelpRequestsTicketIdRoute
   LearnerHelpTopicsTopicIdRoute: typeof LearnerHelpTopicsTopicIdRoute
@@ -4640,6 +4661,7 @@ const LearnerRouteRouteChildren: LearnerRouteRouteChildren = {
   LearnerSettingsIndexRoute: LearnerSettingsIndexRoute,
   LearnerCertificatesCertificateIdReadyRoute:
     LearnerCertificatesCertificateIdReadyRoute,
+  LearnerEventsEventIdRegisterRoute: LearnerEventsEventIdRegisterRoute,
   LearnerHelpConversationsThreadIdRoute: LearnerHelpConversationsThreadIdRoute,
   LearnerHelpRequestsTicketIdRoute: LearnerHelpRequestsTicketIdRoute,
   LearnerHelpTopicsTopicIdRoute: LearnerHelpTopicsTopicIdRoute,
