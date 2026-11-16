@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { blankDraft, draftProblems, registrationTotal } from "./eventRegistration";
 import { findEvent } from "./catalog";
-import { canRegister, registerFree, saveEventDraft, startPaidRegistration, emptyState, type LearnerState } from "./rules";
+import { canRegister, registerFree, saveEventDraft, startPaidRegistration, initialLearnerState, type LearnerState } from "./rules";
 
 const free = findEvent("ai-app-workshop")!;
 const paid = findEvent("lagos-creators-meetup")!;
-const state = (): LearnerState => ({ ...emptyState, profile: { ...emptyState.profile, fullName: "Ada Lovelace", email: "ada@example.com", phone: "" } });
+const state = (): LearnerState => ({ ...initialLearnerState, profile: { ...initialLearnerState.profile, fullName: "Ada Lovelace", email: "ada@example.com", phone: "" } });
 
 describe("event registration flow", () => {
   it("registers for a free event with valid details and blocks a second seat", () => {
