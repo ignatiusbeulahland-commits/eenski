@@ -48,6 +48,18 @@ const customerSchema = z.object({
   email: z.string().email(),
   source: z.enum(["purchase", "manual"]).default("purchase"),
   date: z.string().default(""),
+  /** Dreamers & Subscribers extras; optional so older saved lists still load. */
+  phone: z.string().optional(),
+  channel: z.enum(["self", "dreamverse", "offline"]).optional(),
+  status: z.enum(["active", "pending", "waitlisted"]).optional(),
+  itemIds: z.array(z.string()).optional(),
+  enrolType: z.enum(["free", "paid", "offline"]).optional(),
+  payment: z.enum(["paid", "unpaid", "na"]).optional(),
+  amount: z.number().finite().nonnegative().optional(),
+  interested: z.string().optional(),
+  notes: z.string().optional(),
+  /** Set when a sample waitlist person was moved into this real record. */
+  sampleId: z.string().optional(),
 });
 export type Customer = z.infer<typeof customerSchema>;
 const orderSchema = z.object({
