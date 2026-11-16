@@ -71,7 +71,7 @@ export function StorefrontPage() {
       <PageHeader
         eyebrow="Your store"
         title="Storefront"
-        description="Your public page where people discover and buy your products."
+        description="Fill in your store details and tap Save. Then tap Customise page to choose your colours, story, video and products."
         actions={ready && (
           <div className="flex flex-wrap gap-2">
             {saved.published && <Button asChild><Link to="/store/$handle" params={{ handle: saved.handle.toLowerCase() }} search={{ item: undefined }}><Eye />Open live store</Link></Button>}
@@ -181,7 +181,7 @@ export function StorefrontPage() {
         <BrandIcon src={brandArtwork.market} className="h-12 w-12" />
         <span className="min-w-0 flex-1">
           <span className="block text-[15px] font-extrabold group-hover:text-cobalt">Customise your page</span>
-          <span className="block text-[13px] text-muted-foreground">Accent colour, story, welcome video, links, achievements, featured product and order, with a live phone and desktop preview.</span>
+          <span className="block text-[13px] text-muted-foreground">Saved your store details? Tap here to set your colour, story, welcome video, links and featured product, and see a live preview.</span>
         </span>
         <PenLine className="h-5 w-5 shrink-0 text-cobalt" aria-hidden="true" />
       </Link>
