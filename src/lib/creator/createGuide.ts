@@ -275,18 +275,18 @@ export function createProgress(form: CreatorItem, x: CreateExtras, now = new Dat
   return [basics, a, b, priced, !!form.image];
 }
 
-export const CREATE_STEPS = 5;
-/** Search params for the create pages: steps 2–5 live at ?step=n, step 1 has no param. */
+export const CREATE_STEPS = 3;
+/** Search params for the create pages: steps 2–3 live at ?step=n, step 1 has no param. */
 export function parseCreateStep(s: Record<string, unknown>): { step?: number } {
   const n = Number(s["step"]);
   return Number.isInteger(n) && n >= 2 && n <= CREATE_STEPS ? { step: n } : {};
 }
-/** Which create step owns each validated field (1 basics, 2–3 type sections, 4 pricing, 5 cover). */
+/** Which create step owns each validated field (1 basics + cover, 2 type details, 3 pricing). */
 const STEP_OF_FIELD: Record<string, number> = {
   "item-title": 1, "item-description": 1, "item-category": 1,
   "create-date": 2, "create-capacity": 2, "create-length": 2, "create-delivery": 2, "create-packages": 2, "create-session-length": 2, "create-meet": 2,
-  "create-curriculum": 3, "create-link": 3, "create-address": 3, "create-tickets": 3,
-  "item-price": 4, "item-cover": 5,
+  "create-curriculum": 2, "create-link": 2, "create-address": 2, "create-tickets": 2,
+  "item-price": 3, "item-cover": 1,
 };
 export function createStepOf(field: string) {
   return STEP_OF_FIELD[field] ?? 1;

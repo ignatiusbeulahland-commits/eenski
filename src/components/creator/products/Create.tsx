@@ -75,11 +75,13 @@ export function ItemCreator({ kind, step: urlStep, onStep }: { kind: ItemKind; s
   const setExtra = (p: Partial<CreateExtras>) => setX((v) => ({ ...v, ...p }));
 
   const issue: CreateIssue | null = checked.includes(step) ? stepIssue(form, x, step) : null;
-  const done = createProgress(form, x);
+  const parts = createProgress(form, x);
+  /** Three steps: basics + cover, the type's own details, then pricing (always last). */
+  const done = [parts[0]! && parts[4]!, parts[1]! && parts[2]!, parts[3]!];
   const doneCount = done.filter(Boolean).length;
   const isCourse = kind === "course";
-  const titles = ["The basics", g.sections[0].title, g.sections[1].title, "Pricing", isCourse ? "Cover and presentation" : "Cover image"];
-  const short = ["Basics", g.sections[0].title.split(" ")[0] === "What" ? "Outcomes" : g.sections[0].title.split(" ")[0]!, g.sections[1].title.split(" ")[0]!, "Pricing", isCourse ? "Media" : "Cover"];
+  const titles = ["Basic information", "More information", "Pricing"];
+  const short = titles;
   const isLast = step === CREATE_STEPS;
 
   const build = (f: CreatorItem = form, e: CreateExtras = x): CreatorItem => withCreateDetails({
@@ -126,7 +128,7 @@ export function ItemCreator({ kind, step: urlStep, onStep }: { kind: ItemKind; s
     const problem = earliestIssue(form, x);
     let item: CreatorItem;
     if (publish) {
-      markChecked(1, 2, 3, 4, 5);
+      markChecked(1, 2, 3);
       if (problem) {
         sendTo(problem);
         if (createStepOf(problem.field) !== step) toast.error(`Finish "${titles[createStepOf(problem.field) - 1]}"`, { description: problem.message });
@@ -175,9 +177,9 @@ export function ItemCreator({ kind, step: urlStep, onStep }: { kind: ItemKind; s
         <div className="mt-5 max-w-lg">
           <div className="flex items-center justify-between gap-3 text-xs font-extrabold">
             <span className="text-on-dark">Your progress</span>
-            <span className="tabular-nums text-on-dark-muted">{doneCount}/5 complete</span>
+            <span className="tabular-nums text-on-dark-muted">{doneCount}/3 complete</span>
           </div>
-          <div className="mt-2 grid grid-cols-5 gap-1.5" role="progressbar" aria-label="Sections complete" aria-valuemin={0} aria-valuemax={5} aria-valuenow={doneCount}>
+          <div className="mt-2 grid grid-cols-3 gap-1.5" role="progressbar" aria-label="Sections complete" aria-valuemin={0} aria-valuemax={3} aria-valuenow={doneCount}>
             {short.map((s, i) => (
               <span key={s} className={cn("create-seg-bar h-1.5 rounded-full", done[i] ? "is-done" : i + 1 === step ? "is-on" : "")} />
             ))}
@@ -195,7 +197,7 @@ export function ItemCreator({ kind, step: urlStep, onStep }: { kind: ItemKind; s
         />
       </div>
       <nav aria-label="Create steps" className="create-rail surface mb-5 hidden px-3 py-4 md:block">
-        <ol className="grid grid-cols-5">
+        <ol className="grid grid-cols-3">
           {short.map((s, i) => {
             const n = i + 1;
             const on = step === n;
@@ -236,18 +238,44 @@ export function ItemCreator({ kind, step: urlStep, onStep }: { kind: ItemKind; s
                 )}
               </CreateSection>
             )}
+            {step === 1 && (
+              <CreateSection n={1} id="create-step-1-cover" eyebrow={eyebrow} title={isCourse ? "Cover and presentation" : "Cover image"} text={isCourse ? "Your cover shows on the storefront. Add an intro video, images or slides to present your course." : "A wide 16:9 image works best on your storefront."} done={parts[4]}>
+                <ImageUpload id="item-cover" label="Upload your own" hint="JPG, PNG or WebP · up to 5 MB · 1600 × 900 recommended" value={form.image.startsWith("data:") ? form.image : ""} onChange={(image) => set({ image: image || (creatorCovers[0] ?? "") })} />
+                <div>
+                  <p className="mb-2 text-[13px] font-bold">Or pick a ready-made cover</p>
+                  <div className="grid grid-cols-3 gap-2.5">
+                    {creatorCovers.slice(0, 6).map((src, n) => (
+                      <button key={src} type="button" aria-label={`Choose cover ${n + 1}`} aria-pressed={form.image === src} onClick={() => set({ image: src })} className={cn("create-cover relative overflow-hidden rounded-[12px] p-0.5 ring-2 transition", form.image === src ? "is-on ring-cobalt" : "ring-transparent hover:ring-cobalt-100")}>
+                        <img src={src} alt="" className="aspect-video w-full rounded-[10px] object-cover" />
+                        {form.image === src && <span className="absolute right-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full bg-lime text-midnight shadow"><Check className="h-3 w-3" strokeWidth={3} /></span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {isCourse && (
+                  <>
+                    <hr className="border-line/70" />
+                    <div>
+                      <p className="text-[15px] font-extrabold">Course presentation</p>
+                      <p className="mt-0.5 text-[13px] text-muted-foreground">Show students what's inside before they enrol. You can change these later from the Presentation tab.</p>
+                    </div>
+                    <CoursePresentationEditor value={x.presentation} update={(fn) => setX((v) => ({ ...v, presentation: fn(v.presentation) }))} />
+                  </>
+                )}
+              </CreateSection>
+            )}
             {step === 2 && (
-              <CreateSection n={2} id="create-step-2" eyebrow={eyebrow} title={titles[1]!} text={g.sections[0].text} tip={g.sections[0].tip} done={done[1]} optional={optionalSection[kind][0]}>
+              <CreateSection n={2} id="create-step-2" eyebrow={eyebrow} title={g.sections[0].title} text={g.sections[0].text} tip={g.sections[0].tip} done={parts[1]} optional={optionalSection[kind][0]}>
                 <A {...props} />
               </CreateSection>
             )}
-            {step === 3 && (
-              <CreateSection n={3} id="create-step-3" eyebrow={eyebrow} title={titles[2]!} text={g.sections[1].text} tip={g.sections[1].tip} done={done[2]} optional={optionalSection[kind][1]}>
+            {step === 2 && (
+              <CreateSection n={2} id="create-step-2b" eyebrow={eyebrow} title={g.sections[1].title} text={g.sections[1].text} tip={g.sections[1].tip} done={parts[2]} optional={optionalSection[kind][1]}>
                 <B {...props} />
               </CreateSection>
             )}
-            {step === 4 && (
-              <CreateSection n={4} id="create-step-4" eyebrow={eyebrow} title="Pricing" text={g.priceHint} done={done[3]}>
+            {step === 3 && (
+              <CreateSection n={3} id="create-step-3" eyebrow={eyebrow} title="Pricing" text={g.priceHint} done={parts[3]}>
                 {kind === "service" && x.packages.length > 0 ? (
                   <div className="flex items-center gap-3 rounded-[16px] border border-cobalt-100 bg-ice/50 p-4">
                     <span className="grid h-10 w-10 shrink-0 place-items-center rounded-[12px] bg-cobalt text-primary-foreground"><Tag className="h-5 w-5" /></span>
@@ -274,32 +302,6 @@ export function ItemCreator({ kind, step: urlStep, onStep }: { kind: ItemKind; s
                         </div>
                       </div>
                     )}
-                  </>
-                )}
-              </CreateSection>
-            )}
-            {step === 5 && (
-              <CreateSection n={5} id="create-step-5" eyebrow={eyebrow} title={titles[4]!} text={isCourse ? "Your cover shows on the storefront. Add an intro video, images or slides to present your course." : "A wide 16:9 image works best on your storefront."} done={done[4]}>
-                <ImageUpload id="item-cover" label="Upload your own" hint="JPG, PNG or WebP · up to 5 MB · 1600 × 900 recommended" value={form.image.startsWith("data:") ? form.image : ""} onChange={(image) => set({ image: image || (creatorCovers[0] ?? "") })} />
-                <div>
-                  <p className="mb-2 text-[13px] font-bold">Or pick a ready-made cover</p>
-                  <div className="grid grid-cols-3 gap-2.5">
-                    {creatorCovers.slice(0, 6).map((src, n) => (
-                      <button key={src} type="button" aria-label={`Choose cover ${n + 1}`} aria-pressed={form.image === src} onClick={() => set({ image: src })} className={cn("create-cover relative overflow-hidden rounded-[12px] p-0.5 ring-2 transition", form.image === src ? "is-on ring-cobalt" : "ring-transparent hover:ring-cobalt-100")}>
-                        <img src={src} alt="" className="aspect-video w-full rounded-[10px] object-cover" />
-                        {form.image === src && <span className="absolute right-1.5 top-1.5 grid h-5 w-5 place-items-center rounded-full bg-lime text-midnight shadow"><Check className="h-3 w-3" strokeWidth={3} /></span>}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                {isCourse && (
-                  <>
-                    <hr className="border-line/70" />
-                    <div>
-                      <p className="text-[15px] font-extrabold">Course presentation</p>
-                      <p className="mt-0.5 text-[13px] text-muted-foreground">Show students what's inside before they enrol. You can change these later from the Presentation tab.</p>
-                    </div>
-                    <CoursePresentationEditor value={x.presentation} update={(fn) => setX((v) => ({ ...v, presentation: fn(v.presentation) }))} />
                   </>
                 )}
               </CreateSection>

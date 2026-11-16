@@ -98,7 +98,7 @@ describe("Guided product creation", () => {
 describe("Create flow steps", () => {
   it("reads steps 2 to 5 from the page address and ignores anything else", () => {
     expect(parseCreateStep({ step: "3" })).toEqual({ step: 3 });
-    expect(parseCreateStep({ step: 5 })).toEqual({ step: 5 });
+    expect(parseCreateStep({ step: 5 })).toEqual({});
     expect(parseCreateStep({ step: "1" })).toEqual({});
     expect(parseCreateStep({ step: "6" })).toEqual({});
     expect(parseCreateStep({ step: "abc" })).toEqual({});
@@ -110,8 +110,8 @@ describe("Create flow steps", () => {
   });
   it("puts each problem on the step that owns its field", () => {
     expect(stepIssue(base("live"), defaultExtras, 2, now)?.field).toBe("create-date");
-    expect(stepIssue(base("live", { date: "2026-04-01T10:00" }), { ...defaultExtras, venue: "in_person" }, 3, now)?.field).toBe("create-address");
-    expect(stepIssue(base("course", { price: NaN }), defaultExtras, 4, now)?.field).toBe("item-price");
+    expect(stepIssue(base("live", { date: "2026-04-01T10:00" }), { ...defaultExtras, venue: "in_person" }, 2, now)?.field).toBe("create-address");
+    expect(stepIssue(base("course", { price: NaN }), defaultExtras, 3, now)?.field).toBe("item-price");
     expect(createStepOf("create-session-length")).toBe(2);
   });
   it("saving goes back to the earliest unfinished step", () => {

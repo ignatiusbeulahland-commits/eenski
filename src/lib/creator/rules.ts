@@ -40,6 +40,8 @@ export const itemSchema = z.object({
   course: courseConfigSchema.optional(),
   /** Course builder answers (audience, rich description, uploads, multi-currency and Pay-As-You-Go pricing). */
   builder: builderSchema.optional(),
+  /** Listed on Enski Dreamverse discovery (prototype flag, published items only). */
+  dreamverse: z.boolean().optional(),
   download: downloadConfigSchema.optional(),
   live: liveConfigSchema.optional(),
   service: serviceConfigSchema.optional(),

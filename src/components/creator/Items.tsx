@@ -22,6 +22,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/dashboard-ui/button";
 import { Input } from "@/components/dashboard-ui/input";
 import { Textarea } from "@/components/dashboard-ui/textarea";
@@ -213,30 +214,7 @@ export function ItemCollection({ kind }: { kind: ItemKind }) {
               <p className="mt-4 rounded-xl bg-soft px-3 py-2 text-xs font-semibold text-muted-foreground ring-1 ring-line">
                 {cardMeta(i, state.orders)}
               </p>
-              <div className="mt-auto flex items-center gap-2 pt-4">
-                <Button asChild variant="soft" size="sm" className="flex-1">
-                  <ItemLink item={i}>
-                    <Eye />
-                    Manage
-                  </ItemLink>
-                </Button>
-                <Button asChild variant="quiet" size="sm" aria-label={`Edit ${i.title}`}>
-                  <ItemLink item={i} edit>
-                    <Pencil />
-                    Edit
-                  </ItemLink>
-                </Button>
-                <Button
-                  variant="quiet"
-                  size="sm"
-                  className="px-3 hover:text-destructive"
-                  aria-label={`Delete ${i.title}`}
-                  title="Delete (moves to Bin)"
-                  onClick={() => setBinTarget(i)}
-                >
-                  <Trash2 />
-                </Button>
-              </div>
+              <ProductActions item={i} label={info.label} onDelete={() => setBinTarget(i)} />
             </div>
           </article>
         ))}
@@ -266,6 +244,46 @@ export function ItemCollection({ kind }: { kind: ItemKind }) {
       </>
       )}
       <MoveToBinDialog item={binTarget} onOpenChange={(o) => !o && setBinTarget(null)} />
+    </div>
+  );
+}
+/** Card actions for every product: details, edit, publish, share, delete, Dreamverse. */
+function ProductActions({ item, label, onDelete }: { item: CreatorItem; label: string; onDelete: () => void }) {
+  const { update } = useCreator();
+  const navigate = useNavigate();
+  const live = item.status === "published";
+  const btn = "flex min-h-10 items-center justify-center rounded-[10px] border border-line bg-card px-2 text-center text-[13px] font-semibold text-foreground transition-colors hover:bg-soft focus-visible:outline-2 focus-visible:outline-cobalt";
+  const patch = (p: Partial<CreatorItem>, note: string) =>
+    update((s) => ({ items: s.items.map((x) => (x.id === item.id ? { ...x, ...p } : x)), activity: [...s.activity, activityEntry(note)] }));
+  const togglePublish = () => {
+    if (live) {
+      patch({ status: "draft", dreamverse: false }, `${label} unpublished: ${item.title}`);
+      navigate({ to: "/creator/products/result/$itemId", params: { itemId: item.id }, search: { fresh: true, change: "unpublished" } });
+    } else {
+      patch({ status: "published" }, `${label} published: ${item.title}`);
+      navigate({ to: "/creator/products/result/$itemId", params: { itemId: item.id }, search: { fresh: true } });
+    }
+  };
+  const share = async () => {
+    const url = `${window.location.origin}${itemPaths[item.kind].detail.replace("$slug", item.id)}`;
+    try {
+      if (navigator.share) await navigator.share({ title: item.title, url });
+      else { await navigator.clipboard.writeText(url); toast.success("Link copied"); }
+    } catch { toast.message("Copy this link", { description: url }); }
+  };
+  const dreamverse = () => {
+    if (!live) { toast.error(`Publish this ${label.toLowerCase()} first`, { description: "Only published products can be listed on Dreamverse." }); return; }
+    patch({ dreamverse: !item.dreamverse }, `${item.dreamverse ? "Removed from" : "Published to"} Dreamverse: ${item.title}`);
+    toast.success(item.dreamverse ? "Removed from Dreamverse" : "Published to Dreamverse");
+  };
+  return (
+    <div className="mt-auto grid grid-cols-2 gap-1.5 pt-4">
+      <ItemLink item={item} className={cn(btn, "col-span-2")}>View {label.toLowerCase()} details</ItemLink>
+      <ItemLink item={item} edit className={btn}>Edit {label.toLowerCase()}</ItemLink>
+      <button type="button" className={btn} onClick={togglePublish}>{live ? "Unpublish" : "Publish"} {label.toLowerCase()}</button>
+      <button type="button" className={btn} onClick={share}>Share</button>
+      <button type="button" className={cn(btn, "text-destructive")} onClick={onDelete} aria-label={`Delete ${item.title}`}>Delete</button>
+      <button type="button" className={cn(btn, "col-span-2")} onClick={dreamverse}>{item.dreamverse ? "Unpublish from Dreamverse" : "Publish to Dreamverse"}</button>
     </div>
   );
 }
