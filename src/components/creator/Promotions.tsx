@@ -2,7 +2,7 @@ import { brandArtwork } from "@/components/affiliate/BrandIcon";
 import { ConfirmDialog, ConfirmNote } from "@/components/shared/BrandDialog";
 import { DialogActions } from "@/components/shared/DialogActions";
 import { useMemo, useState } from "react";
-import { Plus, BadgePercent, Pencil, Trash2, Globe2, Power, Eye } from "lucide-react";
+import { Plus, Percent, BadgePercent, Pencil, Trash2, Globe2, Power, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/dashboard-ui/button";
 import { Input } from "@/components/dashboard-ui/input";
