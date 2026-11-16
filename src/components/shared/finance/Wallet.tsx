@@ -72,10 +72,21 @@ export function MultiCurrencyWallet({ balances, displayCurrency, onWithdraw, acc
             <div className="rounded-[16px] bg-on-dark/10 px-3.5 py-2.5 ring-1 ring-on-dark/15"><dt className="text-[11px] font-bold uppercase tracking-[0.1em] text-on-dark-muted">Pending</dt><dd className="mt-0.5 truncate font-extrabold tabular-nums text-lime">{m(b.pending, b.currency)}</dd></div>
             <div className="rounded-[16px] bg-on-dark/10 px-3.5 py-2.5 ring-1 ring-on-dark/15"><dt className="text-[11px] font-bold uppercase tracking-[0.1em] text-on-dark-muted">Withdrawing</dt><dd className="mt-0.5 truncate font-extrabold tabular-nums">{m(b.upcoming, b.currency)}</dd></div>
           </dl>
-          <div className="relative mt-5 flex flex-wrap items-center gap-3">
-            <Button variant={b.available > 0 ? "lime" : "glass"} onClick={() => onWithdraw(b.currency)}><ArrowUpRight />Withdraw {b.currency}</Button>
-            <Link to={accountsLink as "/"} className="inline-flex min-w-0 max-w-full items-center gap-2 rounded-full border border-on-dark/25 px-3 py-1.5 text-[13px] font-bold hover:border-lime hover:text-lime">{accountLabel}</Link>
+          <div className="relative mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <Button
+              variant="lime"
+              size="lg"
+              onClick={() => onWithdraw(b.currency)}
+              className="h-13 w-full px-7 text-base shadow-[0_10px_30px_-8px] shadow-lime/50 sm:w-auto"
+            >
+              <ArrowUpRight className="size-5" />
+              {hidden || b.available <= 0 ? `Withdraw ${b.currency}` : `Withdraw ${formatMoney(b.available, b.currency)}`}
+            </Button>
+            <Link to={accountsLink as "/"} className="inline-flex min-w-0 max-w-full items-center justify-center gap-2 rounded-full border border-on-dark/25 px-4 py-2.5 text-[13px] font-bold hover:border-lime hover:text-lime sm:justify-start sm:py-1.5">{accountLabel}</Link>
           </div>
+          {b.available <= 0 && (
+            <p className="relative mt-2.5 text-xs text-on-dark-muted">Withdrawals open as soon as you have an available {b.currency} balance.</p>
+          )}
         </section>
         <section className="surface p-5 sm:p-6" aria-labelledby="fx-total">
           <div className="flex items-start justify-between gap-3">

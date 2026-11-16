@@ -31,7 +31,7 @@ function Payouts() {
   ];
   return (
     <div>
-      <PageHeader eyebrow="Payouts" title="Payouts" description="Withdraw available earnings to your payout account and track every request." actions={<Button onClick={() => setOpen(balances[0]?.currency ?? "NGN")}>Request payout</Button>} />
+      <PageHeader eyebrow="Payouts" title="Payouts" description="Withdraw available earnings to your payout account and track every request." actions={<Button variant="lime" size="lg" onClick={() => setOpen(balances[0]?.currency ?? "NGN")}><Banknote />Request payout</Button>} />
       <MultiCurrencyWallet balances={balances} displayCurrency={state.finance.displayCurrency} onWithdraw={setOpen}
         accountsLink="/affiliate/settings/bank-account" settingsLink="/affiliate/settings/currency"
         accountLabel={<><Landmark className="h-4 w-4 shrink-0 text-lime" /><span className="truncate">{pref ? `${beneficiaryLabel(pref)} ${maskedLast4(pref)}` : "Add payout account"}</span></>}
