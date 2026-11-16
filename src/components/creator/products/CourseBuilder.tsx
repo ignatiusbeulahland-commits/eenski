@@ -146,7 +146,7 @@ export function CourseBuilder({ existing, step: urlStep, onStep }: { existing?: 
   };
 
   return (
-    <div className="create-flow pb-28">
+    <div className="create-flow">
       <section data-surface="dark" className="bg-brand-panel relative mb-4 overflow-hidden rounded-2xl p-5 text-primary-foreground sm:p-7">
         <span className="hero-dots" aria-hidden="true" />
         <div className="flex items-start justify-between gap-4">
@@ -197,8 +197,8 @@ export function CourseBuilder({ existing, step: urlStep, onStep }: { existing?: 
         )}
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-(--z-sticky) border-t border-line bg-card/95 backdrop-blur lg:left-[var(--sidebar-w,0px)]">
-        <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2 px-4 py-3">
+      <div className="sticky bottom-0 z-(--z-sticky) mt-6 rounded-t-2xl border border-b-0 border-line bg-card/95 shadow-lg backdrop-blur">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3">
           <Button variant="outline" disabled={step === 1 && !review} onClick={() => (review ? setReview(false) : go(step - 1))}><ArrowLeft />Previous</Button>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={saveDraft}><Save />Save as draft</Button>
