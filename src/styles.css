@@ -328,6 +328,7 @@
 
   html {
     scroll-behavior: smooth;
+    background-color: var(--color-background);
   }
 
   /* Decorative glows and floating chips must never make the page scroll sideways */

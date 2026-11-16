@@ -2,14 +2,14 @@ import { brandArtwork } from "@/components/affiliate/BrandIcon";
 import { ConfirmDialog, ConfirmNote } from "@/components/shared/BrandDialog";
 import { DialogActions } from "@/components/shared/DialogActions";
 import { useMemo, useState } from "react";
-import { Plus, BadgePercent, Pencil, Trash2, Globe2, Power, Eye } from "lucide-react";
+import { Plus, Percent, BadgePercent, Pencil, Trash2, Globe2, Power, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/dashboard-ui/button";
 import { Input } from "@/components/dashboard-ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/dashboard-ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/dashboard-ui/tabs";
 import { Field } from "@/components/affiliate/Field";
-import { PageHeader, Panel, FilterSelect, SearchInput, EmptyState, StatusBadge } from "@/components/affiliate/ui";
+import { PageHeader, Panel, FilterSelect, SearchInput, EmptyState, StatusBadge, StatCard } from "@/components/affiliate/ui";
 import { useCreator, activityEntry } from "@/lib/creator/store";
 import { type Promotion } from "@/lib/creator/rules";
 import { COUPON_TZ_LABEL, couponPhase, discountLabel, promotionProblems, type CouponField, type CouponPhase } from "@/lib/creator/coupons";
@@ -136,6 +136,12 @@ export function CouponsPage() {
   return (
     <div className="min-w-0">
       <PageHeader eyebrow="Marketing" title="Coupons" description="Create and manage discount codes for your products." actions={create} />
+      <div className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard featured icon={BadgePercent} art={brandArtwork.conversion} label="Active coupons" value={String(rows.filter((r) => r.phase === "active").length)} />
+        <StatCard icon={BadgePercent} art={brandArtwork.calendar} label="Scheduled" value={String(rows.filter((r) => r.phase === "scheduled").length)} />
+        <StatCard icon={BadgePercent} art={brandArtwork.receipt} label="Times used" value={rows.reduce((n, r) => n + r.used, 0).toLocaleString()} />
+        <StatCard icon={BadgePercent} art={brandArtwork.pending} label="Ended or paused" value={String(rows.filter((r) => r.phase !== "active" && r.phase !== "scheduled").length)} />
+      </div>
       <Tabs value={tab} onValueChange={(v) => { setTab(v as typeof tab); setFilter("all"); }}>
         <TabsList className="mb-4">
           <TabsTrigger value="active">Active coupons ({rows.filter((r) => r.phase === "active").length})</TabsTrigger>
@@ -199,7 +205,7 @@ export function CouponsPage() {
       {!list.length && (
         <Panel>
           <EmptyState
-            icon={BadgePercent}
+            icon={Percent}
             title={inTab.length ? "No matching coupons" : tab === "active" ? "No active coupons" : "No inactive coupons"}
             description={inTab.length ? "Try another search or filter." : tab === "active" ? "Create a coupon to reward your audience. It shows here while it's running." : "Scheduled, expired and deactivated coupons will show here."}
             action={inTab.length ? <Button variant="outline" onClick={() => { setQ(""); setFilter("all"); }}>Clear filters</Button> : tab === "active" ? create : undefined}
