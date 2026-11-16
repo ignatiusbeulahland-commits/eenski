@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, Bar, BarChart, CartesianGrid, Cell, ComposedChart, Legend, Line, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { BadgePercent, BookOpenCheck, ChevronLeft, ChevronRight, Download, Package, Receipt, Wallet, LineChart as LineIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/dashboard-ui/button";
 import { Input } from "@/components/dashboard-ui/input";
 import { Switch } from "@/components/dashboard-ui/switch";
 import { PageHeader, Panel, EmptyState, SearchInput, FilterSelect, StatusBadge } from "@/components/affiliate/ui";
+import { BrandIcon, brandArtwork } from "@/components/affiliate/BrandIcon";
 import { Skeleton } from "@/components/dashboard-ui/skeleton";
 import { useCreator } from "@/lib/creator/store";
 import { kindInfo } from "@/lib/creator/data";
@@ -34,15 +35,54 @@ function Segmented<T extends string>({ label, value, options, onChange }: { labe
   );
 }
 
-function Metric({ icon: Icon, label, value, lines, tone }: { icon: typeof Wallet; label: string; value: string; lines: string[]; tone: string }) {
+function Metric({ art, label, value, lines, featured }: { art: string; label: string; value: string; lines: string[]; featured?: boolean }) {
   return (
-    <div className="surface flex min-w-0 flex-col gap-3 p-5 transition-shadow hover:shadow-md">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-semibold text-muted-foreground">{label}</p>
-        <span className={cn("grid h-10 w-10 shrink-0 place-items-center rounded-xl", tone)}><Icon className="h-5 w-5" /></span>
+    <div className={cn("stat-card surface group relative flex min-w-0 flex-col gap-3 overflow-hidden p-5", featured && "is-featured")}>
+      <div className="flex items-start justify-between gap-3">
+        <p className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">{featured && <span className="neon-dot shrink-0" aria-hidden="true" />}{label}</p>
+        <BrandIcon src={art} className="stat-art -mr-1 -mt-1 h-12 w-12" />
       </div>
       <p className="truncate text-2xl font-extrabold tabular-nums text-foreground sm:text-[26px]">{value}</p>
       {lines.length > 0 && <div className="space-y-0.5 text-xs text-muted-foreground">{lines.map((l) => <p key={l}>{l}</p>)}</div>}
+      <div className="stat-card-bar absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" aria-hidden="true" />
+    </div>
+  );
+}
+
+const KIND_COLORS = ["var(--cobalt)", "var(--sky)", "var(--lime-press)", "var(--warning)", "var(--midnight)"];
+
+/** Premium donut: share of revenue per product type, total in the centre. */
+function KindDonut({ data, centre, fmt }: { data: { name: string; value: number }[]; centre: string; fmt: (v: number) => string }) {
+  const sum = data.reduce((n, d) => n + d.value, 0) || 1;
+  return (
+    <div className="grid items-center gap-5 sm:grid-cols-[minmax(0,220px)_minmax(0,1fr)]">
+      <div className="relative mx-auto h-52 w-52">
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart>
+            <Pie data={data} dataKey="value" nameKey="name" innerRadius="64%" outerRadius="96%" paddingAngle={2} cornerRadius={6} stroke="var(--card)" strokeWidth={2} animationDuration={600}>
+              {data.map((d, i) => <Cell key={d.name} fill={KIND_COLORS[i % KIND_COLORS.length]} />)}
+            </Pie>
+            <Tooltip contentStyle={tipStyle} formatter={(v, n) => [`${fmt(Number(v))} · ${Math.round((Number(v) / sum) * 100)}%`, n]} />
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="pointer-events-none absolute inset-0 grid place-items-center text-center">
+          <div><p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Total</p><p className="text-lg font-extrabold tabular-nums">{centre}</p></div>
+        </div>
+      </div>
+      <ul className="space-y-2.5">
+        {data.map((d, i) => {
+          const pct = Math.round((d.value / sum) * 100);
+          return (
+            <li key={d.name} className="text-sm">
+              <div className="flex items-center justify-between gap-3">
+                <span className="flex min-w-0 items-center gap-2 font-semibold"><span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: KIND_COLORS[i % KIND_COLORS.length] }} /><span className="truncate">{d.name}</span></span>
+                <span className="shrink-0 tabular-nums text-muted-foreground">{fmt(d.value)} · <b className="text-foreground">{pct}%</b></span>
+              </div>
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full" style={{ width: `${pct}%`, background: KIND_COLORS[i % KIND_COLORS.length] }} /></div>
+            </li>
+          );
+        })}
+      </ul>
     </div>
   );
 }
@@ -68,6 +108,11 @@ export function PerformancePage() {
   const top = topProducts(sales);
   const shownTop = showAll ? top : top.slice(0, 5);
   const months = monthlyCommission(sales).map((m) => ({ ...m, value: convert(m.total, currency) }));
+  const byKind = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of top) m.set(kindInfo[p.kind].plural, (m.get(kindInfo[p.kind].plural) ?? 0) + p.revenue);
+    return [...m].map(([name, value]) => ({ name, value: Math.round(value) })).filter((d) => d.value > 0).sort((a, b) => b.value - a.value);
+  }, [top]);
   const tx = filterTx(sales, f);
   const pages = Math.max(1, Math.ceil(tx.length / PAGE));
   const cur = Math.min(page, pages - 1);
@@ -103,27 +148,28 @@ export function PerformancePage() {
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Metric icon={BookOpenCheck} label="Total enrolments" value={s.enrolments.toLocaleString()} lines={[range === "all" ? "All time" : `Last ${range} days`]} tone="bg-ice text-cobalt" />
-        <Metric icon={Wallet} label="Total revenue" value={money(s.net, currency)} lines={[`Gross: ${money(s.gross, currency)}`, `Refunded: ${money(s.refunded, currency)}`]} tone="bg-ice text-sky-text" />
-        <Metric icon={BadgePercent} label="Average commission" value={money(s.avgCommission, currency)} lines={[`Paid: ${money(s.commPaid, currency)}`, s.waiting ? `${s.waiting} more waiting to settle` : "Nothing waiting to settle"]} tone="bg-lime text-midnight" />
-        <Metric icon={Package} label="Products published" value={String(s.published)} lines={["Across all product types"]} tone="bg-midnight text-lime" />
+        <Metric art={brandArtwork.people} label="Total enrolments" value={s.enrolments.toLocaleString()} lines={[range === "all" ? "All time" : `Last ${range} days`]} />
+        <Metric featured art={brandArtwork.cash} label="Total revenue" value={money(s.net, currency)} lines={[`Gross: ${money(s.gross, currency)}`, `Refunded: ${money(s.refunded, currency)}`]} />
+        <Metric art={brandArtwork.conversion} label="Average commission" value={money(s.avgCommission, currency)} lines={[`Paid: ${money(s.commPaid, currency)}`, s.waiting ? `${s.waiting} more waiting to settle` : "Nothing waiting to settle"]} />
+        <Metric art={brandArtwork.package} label="Products published" value={String(s.published)} lines={["Across all product types"]} />
       </div>
 
       <Panel title={`Revenue over time (${currency}, after refunds)`} className="mt-6" description="Hover a date for exact figures. Tap a legend item to hide it.">
         {s.enrolments ? (
           <div className="h-72 w-full min-w-0 sm:h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={series} margin={{ top: 10, right: 4, left: 0, bottom: 0 }}>
+              <ComposedChart data={series} margin={{ top: 10, right: 4, left: 0, bottom: 0 }}>
+                <defs><linearGradient id="perf-rev" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--cobalt)" stopOpacity={0.28} /><stop offset="100%" stopColor="var(--cobalt)" stopOpacity={0} /></linearGradient></defs>
                 <CartesianGrid stroke="var(--line)" vertical={false} />
                 <XAxis dataKey="label" tick={axis} minTickGap={24} tickLine={false} />
                 <YAxis yAxisId="rev" width={56} tick={axis} tickLine={false} axisLine={false} tickFormatter={(v) => fx(v, true)} />
                 <YAxis yAxisId="sales" orientation="right" width={30} tick={axis} tickLine={false} axisLine={false} allowDecimals={false} />
-                <Tooltip contentStyle={tipStyle} formatter={(v, n) => (n === "Total earnings" ? [fx(v), n] : [`${v} sale${Number(v) === 1 ? "" : "s"}`, n])} />
+                <Tooltip contentStyle={tipStyle} cursor={{ stroke: "var(--cobalt-100)", strokeWidth: 1.5 }} formatter={(v, n) => (n === "Total earnings" ? [fx(v), n] : [`${v} sale${Number(v) === 1 ? "" : "s"}`, n])} />
                 <Legend wrapperStyle={{ fontSize: 12, cursor: "pointer" }} onClick={(e) => { const k = String((e as { dataKey?: unknown }).dataKey); setHidden((h) => ({ ...h, [k]: !h[k] })); }}
                   formatter={(v, e) => <span style={{ color: hidden[String((e as { dataKey?: unknown }).dataKey)] ? "var(--muted-foreground)" : "var(--foreground)", textDecoration: hidden[String((e as { dataKey?: unknown }).dataKey)] ? "line-through" : "none" }}>{v}</span>} />
-                <Line yAxisId="rev" type="monotone" dataKey="revenue" name="Total earnings" stroke="var(--cobalt)" strokeWidth={2.5} dot={false} activeDot={{ r: 5 }} hide={!!hidden["revenue"]} animationDuration={500} />
+                <Area yAxisId="rev" type="monotone" dataKey="revenue" name="Total earnings" stroke="var(--cobalt)" strokeWidth={2.5} fill="url(#perf-rev)" dot={false} activeDot={{ r: 5 }} hide={!!hidden["revenue"]} animationDuration={500} />
                 <Line yAxisId="sales" type="monotone" dataKey="sales" name="Sales" stroke="var(--warning)" strokeWidth={2} strokeDasharray="6 4" dot={false} activeDot={{ r: 4 }} hide={!!hidden["sales"]} animationDuration={500} />
-              </LineChart>
+              </ComposedChart>
             </ResponsiveContainer>
           </div>
         ) : <EmptyState icon={LineIcon} title="No sales in this period" description="Pick a longer period, or share your products to see sales here." compact />}
@@ -168,7 +214,8 @@ export function PerformancePage() {
                     <XAxis dataKey="short" tick={axis} tickLine={false} />
                     <YAxis width={56} tick={axis} tickLine={false} axisLine={false} tickFormatter={(v) => fx(v, true)} />
                     <Tooltip cursor={{ fill: "var(--ice)" }} contentStyle={tipStyle} labelFormatter={(_, p) => (p?.[0]?.payload as { label?: string })?.label ?? ""} formatter={(v) => [fx(v), "Commission"]} />
-                    <Bar dataKey="value" fill="var(--cobalt)" radius={[6, 6, 0, 0]} maxBarSize={48} animationDuration={500} />
+                    <defs><linearGradient id="perf-bar" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--cobalt)" /><stop offset="100%" stopColor="var(--sky)" /></linearGradient></defs>
+                    <Bar dataKey="value" fill="url(#perf-bar)" radius={[8, 8, 2, 2]} maxBarSize={44} animationDuration={500} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -176,6 +223,10 @@ export function PerformancePage() {
           ) : <EmptyState icon={BadgePercent} title="No commission yet" description="Commission appears here once sales settle." compact />}
         </Panel>
       </div>
+
+      <Panel title={`Revenue by product type (${currency})`} className="mt-6" description="Share of earnings in this period, after refunds">
+        {byKind.length ? <KindDonut data={byKind} centre={money(s.net, currency)} fmt={(v) => money(v, currency)} /> : <EmptyState icon={LineIcon} title="No revenue yet" description="Your earnings split by product type will show here." compact />}
+      </Panel>
 
       <Panel title="Commission details" className="mt-6" bodyClassName="p-0"
         actions={<Button size="sm" variant="outline" onClick={exportCsv}><Download className="h-4 w-4" />Download CSV</Button>}>

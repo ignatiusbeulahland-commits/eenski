@@ -4,7 +4,7 @@ export type Theme = "light" | "dark";
 export const THEME_KEY = "enski-theme";
 
 /** Runs in <head> before paint so a saved or system dark preference never flashes light. */
-export const themeInitScript = `(function(){try{var t=localStorage.getItem("${THEME_KEY}");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}if(t==="dark")document.documentElement.classList.add("dark")}catch(e){}})();`;
+export const themeInitScript = `(function(){try{var t=localStorage.getItem("${THEME_KEY}");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}var d=document.documentElement;if(t==="dark")d.classList.add("dark");if(/^\/(learner|creator|affiliate)(\/|$)/.test(location.pathname))d.setAttribute("data-skin","dashboard")}catch(e){}})();`;
 
 function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle("dark", theme === "dark");
