@@ -1,7 +1,6 @@
 import { brandArtwork } from "@/components/affiliate/BrandIcon";
 import { ConfirmDialog, ConfirmNote } from "@/components/shared/BrandDialog";
 import { DialogActions } from "@/components/shared/DialogActions";
-import { Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Plus, BadgePercent, Pencil, Trash2, Globe2, Power, Eye } from "lucide-react";
 import { toast } from "sonner";
@@ -35,18 +34,11 @@ function CouponForm({ existing, done }: { existing?: Promotion | undefined; done
   const available = state.items.filter((i) => i.status !== "archived" && !i.binnedAt);
   const today = new Date(Date.now() + 3600e3).toISOString().slice(0, 10);
   const [form, setForm] = useState<Promotion>(
-    existing ?? { id: "", name: "", code: "", itemId: available[0]?.id ?? "", discount: 10, discountType: "percent", start: today, startTime: "00:00", end: "", endTime: "23:59", status: "active" },
+    existing ?? { id: "", name: "", code: "", itemId: "", discount: 10, discountType: "percent", start: today, startTime: "00:00", end: "", endTime: "23:59", status: "active" },
   );
   const [limit, setLimit] = useState(existing?.usageLimit ? String(existing.usageLimit) : "");
   const [errors, setErrors] = useState<Partial<Record<CouponField, string>>>({});
   const set = <K extends keyof Promotion>(k: K, v: Promotion[K]) => setForm((f) => ({ ...f, [k]: v }));
-  if (!available.length && !existing)
-    return (
-      <div>
-        <p className="text-sm text-muted-foreground">Create a product first, then add a coupon for it.</p>
-        <Button asChild className="mt-4" onClick={done}><Link to="/creator/courses/create">Create a course</Link></Button>
-      </div>
-    );
   const percent = form.discountType === "percent";
   return (
     <form
@@ -83,8 +75,8 @@ function CouponForm({ existing, done }: { existing?: Promotion | undefined; done
             <Input id="coupon-discount" type="number" inputMode="decimal" min={percent ? 1 : 1} max={percent ? 100 : undefined} step={percent ? 1 : 50} placeholder={percent ? "e.g. 10" : "e.g. 2000"} value={Number.isFinite(form.discount) ? form.discount : ""} onChange={(e) => set("discount", e.target.value === "" ? NaN : Number(e.target.value))} />
           </Field>
         </div>
-        <Field id="coupon-item" label="Apply to *" error={errors.itemId}>
-          <FilterSelect label="Apply to" value={form.itemId} onChange={(v) => set("itemId", v)} className="w-full sm:w-full" options={available.map((i) => [i.id, i.title] as [string, string])} />
+        <Field id="coupon-item" label="Apply to" error={errors.itemId} hint="Pick one product, or keep it on all products.">
+          <FilterSelect label="Apply to" value={form.itemId} onChange={(v) => set("itemId", v)} className="w-full sm:w-full" options={[["", "All products"], ...available.map((i) => [i.id, i.title] as [string, string])]} />
         </Field>
         <Field id="coupon-limit" label="Usage limit (optional)" error={errors.usageLimit} hint="Maximum total redemptions. Leave empty for unlimited.">
           <Input id="coupon-limit" type="number" inputMode="numeric" min={1} step={1} placeholder="Unlimited" value={limit} onChange={(e) => setLimit(e.target.value)} />
@@ -139,6 +131,7 @@ export function CouponsPage() {
     ? [["all", "All coupons"], ["percent", "Percentage"], ["fixed", "Fixed amount"]]
     : [["all", "All coupons"], ["percent", "Percentage"], ["fixed", "Fixed amount"], ["scheduled", "Scheduled"], ["expired", "Expired"], ["paused", "Deactivated"], ["used up", "Limit reached"], ["draft", "Draft"]];
   const itemOf = (p: Promotion) => state.items.find((i) => i.id === p.itemId);
+  const itemLabel = (p: Promotion) => (p.itemId ? (itemOf(p)?.title ?? "Removed product") : "All products");
 
   return (
     <div className="min-w-0">
@@ -169,7 +162,7 @@ export function CouponsPage() {
                     <tr key={p.id} className="border-b last:border-0 align-top">
                       <td className="px-4 py-3 font-extrabold text-cobalt">{p.code}</td>
                       <td className="px-4 py-3">{discountLabel(p)}<span className="block text-xs text-muted-foreground">{p.discountType === "fixed" ? "Fixed" : "Percentage"}</span></td>
-                      <td className="max-w-[14rem] px-4 py-3">{item ? <ItemLink item={item} className="line-clamp-2 text-cobalt">{item.title}</ItemLink> : "Removed product"}</td>
+                      <td className="max-w-[14rem] px-4 py-3">{item ? <ItemLink item={item} className="line-clamp-2 text-cobalt">{item.title}</ItemLink> : itemLabel(p)}</td>
                       <td className="px-4 py-3 tabular-nums">{used} / {p.usageLimit ?? "∞"}</td>
                       <td className="px-4 py-3 text-xs">{fmt(p.start, p.startTime)}<span className="block text-muted-foreground">to {fmt(p.end, p.endTime)}</span></td>
                       <td className="px-4 py-3"><StatusBadge tone={PHASE[phase].tone}>{PHASE[phase].label}</StatusBadge></td>
@@ -195,7 +188,7 @@ export function CouponsPage() {
                     <dt className="text-muted-foreground">Starts</dt><dd className="text-xs">{fmt(p.start, p.startTime)}</dd>
                     <dt className="text-muted-foreground">Ends</dt><dd className="text-xs">{fmt(p.end, p.endTime)}</dd>
                   </dl>
-                  {item && <ItemLink item={item} className="mt-3 block truncate text-xs text-cobalt">{item.title}</ItemLink>}
+                  {item ? <ItemLink item={item} className="mt-3 block truncate text-xs text-cobalt">{item.title}</ItemLink> : <span className="mt-3 block truncate text-xs text-muted-foreground">{itemLabel(p)}</span>}
                   <div className="mt-4 border-t pt-4"><Actions p={p} /></div>
                 </div>
               );
@@ -217,7 +210,7 @@ export function CouponsPage() {
         <DialogContent className="max-h-[92dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing === "new" ? "Create new coupon" : "Edit coupon"}</DialogTitle>
-            <DialogDescription>Coupons apply to one product during the schedule you set.</DialogDescription>
+            <DialogDescription>Coupons apply during the schedule you set, to one product or all of them.</DialogDescription>
           </DialogHeader>
           {editing && <CouponForm key={editing === "new" ? "new" : editing.id} existing={editing === "new" ? undefined : editing} done={() => setEditing(null)} />}
         </DialogContent>
@@ -226,7 +219,7 @@ export function CouponsPage() {
         <DialogContent>
           {viewing && (
             <>
-              <DialogHeader><DialogTitle>{viewing.code}</DialogTitle><DialogDescription>{discountLabel(viewing)} · {itemOf(viewing)?.title ?? "Removed product"}</DialogDescription></DialogHeader>
+              <DialogHeader><DialogTitle>{viewing.code}</DialogTitle><DialogDescription>{discountLabel(viewing)} · {itemLabel(viewing)}</DialogDescription></DialogHeader>
               <dl className="grid grid-cols-2 gap-y-2 text-sm">
                 <dt className="text-muted-foreground">Status</dt><dd>{PHASE[couponPhase(viewing, uses(viewing))].label}</dd>
                 <dt className="text-muted-foreground">Used</dt><dd>{uses(viewing)} of {viewing.usageLimit ?? "unlimited"}</dd>

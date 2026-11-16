@@ -77,3 +77,8 @@
 - [ ] Promotion flow: details → generate link → copy screen (Charm reacts) → share (simulated) → success
 - [ ] Promoted products: list with stable link, recopy, status, simulated stats
 - [ ] Mobile/tablet/desktop QA, tests, commit
+- [ ] Events page redesign (featured top, banners, cards, filters, details pages, simulated registration, mobile polish)
+- [x] Coupon pop-up opens immediately (no course needed; "All products" default)
+- [x] Events page redesign: featured banner on top, topic tiles, filters, tabs, calendar/grid, mobile layout
+- [x] Event details as standalone pages with ticket reference, cancel, mark attended, preview steps
+- [x] Registration screen /learner/events/$id/register: tickets → details → review → payment/confirm (verified on mobile, free + paid)

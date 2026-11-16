@@ -1,15 +1,18 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { Award, CalendarCheck, CalendarDays, CalendarPlus, CheckCircle2, ChevronRight, Clock, Globe2, Hourglass, MapPin, Share2, ShoppingCart, Ticket, Users, Video } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+import { brandArtwork } from "@/components/affiliate/BrandIcon";
 import { Panel, StatusBadge } from "@/components/affiliate/ui";
 import { Button } from "@/components/dashboard-ui/button";
-import { eventActionLabel, eventLength, events, findEvent, isPast, startsIn, type LearnerEvent } from "@/lib/learner/catalog";
+import { ConfirmDialog, ConfirmNote } from "@/components/shared/BrandDialog";
+import { eventActionLabel, eventLength, events, findEvent, isPast, isPreviewEvent, startsIn, type LearnerEvent } from "@/lib/learner/catalog";
 import { downloadEventIcs } from "@/lib/learner/ics";
-import { addToCart, canAddToCart, registration } from "@/lib/learner/rules";
+import { addToCart, canAddToCart, cancelRegistration, markAttended, registration } from "@/lib/learner/rules";
 import { useLearner } from "@/lib/learner/store";
 import { EVENT_TZ, dayIn, localDateTime, sameAsEventTime, timeIn, useViewerTimeZone, watDateTime, zoneLabel, zonePlace } from "@/lib/learner/timezone";
 import { cn } from "@/lib/utils";
-import { DateBlock, EventCard, HostAvatar, LearnerNotFound, WishlistButton, price } from "../shared";
+import { DateBlock, EventCard, HostAvatar, LearnerNotFound, PreviewBanner, WishlistButton, price } from "../shared";
 
 export const shareEvent = async (e: Pick<LearnerEvent, "id" | "title">) => {
   const url = `${window.location.origin}/learner/events/${e.id}`;
@@ -25,12 +28,15 @@ export function EventDetails({ id }: { id: string }) {
   const { state, update } = useLearner();
   const navigate = useNavigate();
   const tz = useViewerTimeZone();
+  const [cancel, setCancel] = useState(false);
   const e = findEvent(id);
   if (!e) return <LearnerNotFound what="event" />;
   const reg = registration(state, e.id);
   const past = isPast(e);
+  const preview = isPreviewEvent(e);
   const inCart = state.cart.some((c) => c.kind === "event" && c.id === e.id);
   const draft = state.eventDrafts[e.id];
+  const registerTo = { to: "/learner/events/$eventId/register", params: { eventId: e.id } } as const;
   const end = new Date(new Date(e.start).getTime() + e.durationMinutes * 60000);
   const hours = eventLength(e.durationMinutes);
   const sameWat = sameAsEventTime(e.start, tz);
@@ -65,6 +71,17 @@ export function EventDetails({ id }: { id: string }) {
 
   return (
     <div>
+      {preview && (
+        <PreviewBanner
+          what="event"
+          steps={[
+            { label: "Find the event", done: true },
+            ...(e.price > 0 ? [{ label: "Buy ticket", done: inCart || Boolean(reg) }, { label: "Check out", done: Boolean(reg) }] : [{ label: "Register", done: Boolean(reg) }]),
+            { label: "Attend", done: Boolean(reg?.attendedAt) },
+            ...(e.eligible ? [{ label: "Earn badge", done: Boolean(reg?.attendedAt) }] : []),
+          ]}
+        />
+      )}
       <nav aria-label="Breadcrumb" className="mb-3 text-sm">
         <ol className="flex min-w-0 items-center gap-1 text-muted-foreground">
           <li><Link to="/learner/events" className="font-bold text-cobalt hover:underline">Events</Link></li>
@@ -191,20 +208,22 @@ export function EventDetails({ id }: { id: string }) {
                 {reg ? (
                   <>
                     <p className="flex items-center gap-2 rounded-xl bg-lime-100 p-3 text-sm font-bold text-lime-text"><CheckCircle2 className="h-4 w-4 shrink-0" aria-hidden="true" />{reg.attendedAt ? "You attended this event" : free ? "You're registered" : `Ticket confirmed · ${reg.tickets} ${reg.tickets > 1 ? "tickets" : "ticket"}`}</p>
-                    <Button asChild size="lg"><Link to="/learner/events/$eventId" params={{ eventId: e.id }}><Ticket /> View my ticket</Link></Button>
+                    {reg.reference && <p className="rounded-xl border border-line bg-soft p-3 text-center font-mono text-sm font-bold tabular-nums" aria-label="Ticket reference">{reg.reference}</p>}
                     {!reg.attendedAt && !past && <Button variant="outline" onClick={() => { downloadEventIcs(e); toast.success("Calendar file downloaded", { description: "Open it to add the event to your calendar." }); }}><CalendarPlus /> Add to calendar</Button>}
+                    {!reg.attendedAt && <Button variant="soft" onClick={() => { update((s) => markAttended(s, e.id)); toast.success("Attendance recorded"); }}><Ticket /> Mark as attended</Button>}
+                    {!reg.attendedAt && free && <Button variant="ghost" className="text-destructive hover:text-destructive" onClick={() => setCancel(true)}>Cancel registration</Button>}
                   </>
                 ) : past ? (
                   <p className="rounded-xl bg-muted p-3 text-sm font-semibold text-muted-foreground">This event has ended. Registration is closed.</p>
                 ) : inCart ? (
                   <>
                     <Button asChild size="lg"><Link to="/learner/checkout" search={{ step: "pay", method: "card" }}><ShoppingCart /> Ticket in cart · Pay now</Link></Button>
-                    <Button asChild variant="outline"><Link to="/learner/events/$eventId" params={{ eventId: e.id }}>Change tickets</Link></Button>
+                    <Button asChild variant="outline"><Link {...registerTo}>Change tickets</Link></Button>
                   </>
                 ) : (
                   <>
                     <Button asChild size="lg">
-                      <Link to="/learner/events/$eventId" params={{ eventId: e.id }}>
+                      <Link {...registerTo}>
                         {free ? <CalendarCheck /> : <Ticket />} {draft ? "Continue registration" : eventActionLabel(e)}
                       </Link>
                     </Button>
@@ -232,6 +251,19 @@ export function EventDetails({ id }: { id: string }) {
           <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">{more.map((x) => <EventCard key={x.id} e={x} />)}</div>
         </section>
       )}
+      <ConfirmDialog
+        open={cancel}
+        onOpenChange={setCancel}
+        art={brandArtwork.calendar}
+        eyebrow="Your registration"
+        title="Cancel your registration?"
+        description={`Your seat at “${e.title}” will be released.`}
+        cancelLabel="Keep my seat"
+        confirmLabel="Cancel registration"
+        onConfirm={() => { update((s) => cancelRegistration(s, e.id)); toast.success("Registration cancelled"); }}
+      >
+        <ConfirmNote>You can register again any time before the event starts.</ConfirmNote>
+      </ConfirmDialog>
     </div>
   );
 }

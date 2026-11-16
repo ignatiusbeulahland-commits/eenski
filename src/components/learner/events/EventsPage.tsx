@@ -7,14 +7,14 @@ import { Input } from "@/components/dashboard-ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/dashboard-ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/dashboard-ui/tabs";
 import { categories, type Category } from "@/lib/affiliate/products";
-import { events, featuredEvents, isPast, publishedEvents, type LearnerEvent } from "@/lib/learner/catalog";
+import { events, featuredEvents, isPast, isPreviewEvent, publishedEvents, type LearnerEvent } from "@/lib/learner/catalog";
 import { activeFilterChips, dateOptions, defaultEventFilters, filterEvents, formatOptions, groupUpcoming, priceOptions, type DateFilter, type EventFilters, type FormatFilter, type PriceFilter } from "@/lib/learner/eventFilters";
 import { registration } from "@/lib/learner/rules";
 import { useLearner } from "@/lib/learner/store";
 import { dayIn, timeIn, useViewerTimeZone, zoneLabel } from "@/lib/learner/timezone";
 import { cn } from "@/lib/utils";
 import { EventCalendar } from "../EventCalendar";
-import { EventCard } from "../shared";
+import { EventCard, PreviewSwitch } from "../shared";
 import { FeaturedEvents } from "./FeaturedEvents";
 
 const TOPIC_ICON: Record<Category, LucideIcon> = { Tech: Code2, Business: TrendingUp, Career: Briefcase, Design: PenTool, Creativity: Palette };
@@ -34,7 +34,9 @@ export function EventsPage() {
   const [sort, setSort] = useState("soonest");
   const [layout, setLayout] = useState<"grid" | "calendar">("grid");
   const [tab, setTab] = useState("upcoming");
+  const [show, setShow] = useState<"live" | "preview">("live");
   const featured = useMemo(() => featuredEvents(), []);
+  const allPreviews = useMemo(() => events.filter((e) => isPreviewEvent(e)), []);
   const order = (list: LearnerEvent[], past = false) =>
     [...list].sort((a, b) => (sort === "price" ? a.price - b.price || a.start.localeCompare(b.start) : sort === "latest" !== past ? b.start.localeCompare(a.start) : a.start.localeCompare(b.start)));
   const filter = (list: LearnerEvent[]) => filterEvents(list, f, new Date(), tz);
@@ -42,6 +44,8 @@ export function EventsPage() {
   const past = useMemo(() => order(filter(publishedEvents.filter((e) => isPast(e))), true), [f, sort, tz]);
   const mine = useMemo(() => order(filter(events.filter((e) => registration(state, e.id)))), [f, sort, tz, state.registrations]);
   const groups = useMemo(() => (sort === "soonest" ? groupUpcoming(upcoming, new Date(), tz) : [{ key: "all", label: "", events: upcoming }]), [upcoming, sort, tz]);
+  const previews = useMemo(() => order(filter(allPreviews)), [f, sort, tz, allPreviews]);
+  const upcomingPreviews = useMemo(() => previews.filter((e) => !isPast(e)), [previews]);
   const chips = activeFilterChips(f);
   const clear = () => setF(defaultEventFilters);
   const clearOne = (k: keyof EventFilters) => setF((cur) => ({ ...cur, [k]: defaultEventFilters[k], ...(k === "date" ? { on: "" } : {}) }));
@@ -53,7 +57,7 @@ export function EventsPage() {
   return (
     <div>
       <PageHeader eyebrow="Events" title="Learn live, together" description="Workshops, live sessions and meetups hosted by Enski creators. Save a seat in a few taps." />
-      <FeaturedEvents list={featured} />
+      {show === "live" && <FeaturedEvents list={featured} />}
 
       <section aria-labelledby="topics-title" className="mb-8">
         <h2 id="topics-title" className="mb-3 flex items-center gap-2.5 text-lg font-extrabold"><span className="lime-tick" aria-hidden="true" />Browse by topic</h2>
@@ -86,6 +90,7 @@ export function EventsPage() {
             <LabeledSelect label="Format" value={f.format} onChange={(v) => set("format", v as FormatFilter)} options={formatOptions} />
             <LabeledSelect label="Sort by" value={sort} onChange={setSort} options={[["soonest", "Date: soonest"], ["latest", "Date: latest"], ["price", "Price: low to high"]]} />
           </div>
+          <PreviewSwitch value={show} onChange={setShow} liveLabel="Live events" liveCount={publishedEvents.length} previewCount={allPreviews.length} className="lg:w-56" />
           <div className="grid grid-cols-2 gap-1 rounded-full border bg-soft p-1 lg:inline-grid" role="group" aria-label="View events as">
             {([["grid", "Grid", LayoutGrid], ["calendar", "Calendar", CalendarRange]] as const).map(([v, label, Icon]) => (
               <button key={v} type="button" onClick={() => setLayout(v)} aria-pressed={layout === v} className={cn("inline-flex h-9 items-center justify-center gap-1.5 rounded-full px-4 text-sm font-bold transition-colors", layout === v ? "bg-cobalt text-primary-foreground" : "text-muted-foreground hover:text-cobalt")}>
@@ -114,6 +119,13 @@ export function EventsPage() {
         </div>
       </section>
 
+      {show === "preview" ? (
+        <section aria-labelledby="preview-events-title">
+          <h2 id="preview-events-title" className="flex items-center gap-2.5 text-lg font-extrabold"><span className="lime-tick" aria-hidden="true" />Preview pages</h2>
+          <p className="mb-4 mt-1 text-sm text-muted-foreground">Open any event to see the details, then register or get a ticket — the whole journey works.</p>
+          {layout === "calendar" ? <EventCalendar events={upcomingPreviews} empty={noMatch} /> : previews.length ? grid(previews) : noMatch}
+        </section>
+      ) : (
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="mb-5 h-auto flex-wrap">
           <TabsTrigger value="upcoming">Upcoming ({upcoming.length})</TabsTrigger>
@@ -150,6 +162,7 @@ export function EventsPage() {
           {past.length ? <ul className="grid gap-3 lg:grid-cols-2">{past.map((e) => <PastEventRow key={e.id} e={e} tz={tz} />)}</ul> : noMatch}
         </TabsContent>
       </Tabs>
+      )}
     </div>
   );
 }

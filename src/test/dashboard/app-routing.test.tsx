@@ -102,6 +102,7 @@ describe("App routing", () => {
     ["dashboard", "/learner/dashboard"],
     ["events", "/learner/events"],
     ["events/ai-app-workshop", "/learner/events_/$eventId"],
+    ["events/ai-app-workshop/register", "/learner/events_/$eventId_/register"],
     ["resources", "/learner/resources"],
     ["resources/vibe-coding", "/learner/resources_/$resourceId"],
     ["wishlist", "/learner/wishlist"],
