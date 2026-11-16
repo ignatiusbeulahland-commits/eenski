@@ -59,12 +59,12 @@ export const links = {
   blog: "/blog",
   dreamersTribe: "/dreamers-trybe",
   dreamersDiary: "/#dreamers-diary",
-  privacy: `${APP_URL}/privacy-policy`,
-  terms: `${APP_URL}/terms-and-conditions`,
+  privacy: "/privacy-policy",
+  terms: "/terms",
   faq: "/faq",
-  cookies: `${APP_URL}/cookies-settings`,
-  copyright: `${APP_URL}/copyright-policy`,
-  kyc: `${APP_URL}/kyc-policy`,
+  cookies: "/cookies-settings",
+  copyright: "/copyright-policy",
+  kyc: "/kyc-policy",
 };
 
 export type NavChild = { label: string; href: string; description: string };
