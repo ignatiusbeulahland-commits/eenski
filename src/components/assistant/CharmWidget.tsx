@@ -80,6 +80,50 @@ function CharmDock({ pathname }: { pathname: string }) {
   const [bubble, setBubble] = useState(false);
   const [request, setRequest] = useState<{ prompt?: string | undefined; human?: boolean | undefined; key: number } | null>(null);
   const launcherRef = useRef<HTMLButtonElement>(null);
+  // Movable + tuckable launcher (saved per device).
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [tucked, setTucked] = useState(false);
+  const dragRef = useRef<{ sx: number; sy: number; ox: number; oy: number; moved: boolean } | null>(null);
+  const movedRef = useRef(false);
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("enski:charm:dock") ?? "null");
+      if (saved && typeof saved.x === "number" && typeof saved.y === "number") setOffset({ x: saved.x, y: saved.y });
+      if (saved?.tucked) setTucked(true);
+    } catch {}
+  }, []);
+  const saveDock = (o: { x: number; y: number }, t: boolean) => {
+    try { localStorage.setItem("enski:charm:dock", JSON.stringify({ ...o, tucked: t })); } catch {}
+  };
+  const clamp = (x: number, y: number) => {
+    const maxX = 0, minX = -(window.innerWidth - 90);
+    const maxY = 0, minY = -(window.innerHeight - 110);
+    return { x: Math.min(maxX, Math.max(minX, x)), y: Math.min(maxY, Math.max(minY, y)) };
+  };
+  const onDragStart = (e: React.PointerEvent) => {
+    if (e.button !== 0) return;
+    dragRef.current = { sx: e.clientX, sy: e.clientY, ox: offset.x, oy: offset.y, moved: false };
+    movedRef.current = false;
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+  };
+  const onDragMove = (e: React.PointerEvent) => {
+    const d = dragRef.current;
+    if (!d) return;
+    const dx = e.clientX - d.sx, dy = e.clientY - d.sy;
+    if (!d.moved && Math.hypot(dx, dy) < 6) return;
+    d.moved = true;
+    movedRef.current = true;
+    setOffset(clamp(d.ox + dx, d.oy + dy));
+  };
+  const onDragEnd = () => {
+    if (dragRef.current?.moved) saveDock(offset, tucked);
+    dragRef.current = null;
+  };
+  const guardClick = (fn: () => void) => () => {
+    if (movedRef.current) { movedRef.current = false; return; }
+    fn();
+  };
+  const tuck = (t: boolean) => { setTucked(t); setBubble(false); saveDock(offset, t); };
   const panelRef = useRef<HTMLDivElement>(null);
 
   const thread = threads.find((t) => t.id === activeId);
@@ -224,8 +268,40 @@ function CharmDock({ pathname }: { pathname: string }) {
   return (
     <>
       {/* Launcher */}
-      {mode !== "open" && (
-        <div className="charm-dock fixed right-4 z-(--z-float) flex items-end gap-2 sm:right-6">
+      {mode !== "open" && tucked && (
+        <button
+          type="button"
+          onClick={() => tuck(false)}
+          aria-label={`Show Charm${hasUnread ? " (new messages)" : ""}`}
+          title="Show Charm"
+          className="charm-dock fixed right-0 z-(--z-float) flex items-center gap-1 rounded-l-full bg-cobalt py-1 pl-1 pr-1.5 text-primary-foreground shadow-float"
+        >
+          <ChevronUp className="size-4 -rotate-90" aria-hidden="true" />
+          <span className="relative grid size-8 place-items-center overflow-hidden rounded-full bg-on-dark/10">
+            <CharmHead look={look} className="size-8" />
+            {hasUnread && <span className="absolute right-0 top-0 size-2.5 rounded-full bg-lime" aria-hidden="true" />}
+          </span>
+        </button>
+      )}
+      {mode !== "open" && !tucked && (
+        <div
+          className="charm-dock fixed right-4 z-(--z-float) flex touch-none items-end gap-2 sm:right-6"
+          style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
+          onPointerDown={onDragStart}
+          onPointerMove={onDragMove}
+          onPointerUp={onDragEnd}
+          onPointerCancel={onDragEnd}
+          title="Drag to move Charm"
+        >
+          <button
+            type="button"
+            onClick={guardClick(() => tuck(true))}
+            aria-label="Minimise Charm to the side"
+            title="Minimise"
+            className="absolute -left-2 -top-2 z-10 grid size-6 place-items-center rounded-full border border-line bg-card text-muted-foreground shadow-float hover:text-ink"
+          >
+            <X className="size-3" />
+          </button>
           {bubble && mode === "closed" && (
             <div className="relative mb-3 max-w-[220px] animate-rise rounded-[18px] rounded-br-[6px] border border-line bg-card p-3 pr-8 text-sm font-semibold text-ink shadow-float">
               <button type="button" onClick={open} className="text-left">
@@ -240,7 +316,7 @@ function CharmDock({ pathname }: { pathname: string }) {
             <button
               ref={launcherRef}
               type="button"
-              onClick={open}
+              onClick={guardClick(open)}
               aria-label={`Open chat with Charm${hasUnread ? " (new messages)" : ""}`}
               className="flex items-center gap-2 rounded-full bg-cobalt py-1.5 pl-1.5 pr-4 text-primary-foreground shadow-float transition-transform hover:-translate-y-0.5"
             >
@@ -258,7 +334,7 @@ function CharmDock({ pathname }: { pathname: string }) {
             <button
               ref={launcherRef}
               type="button"
-              onClick={open}
+              onClick={guardClick(open)}
               aria-label={`Chat with Charm, the Enski Assistant${hasUnread ? " (new messages)" : ""}`}
               className="charm-fab group"
             >
