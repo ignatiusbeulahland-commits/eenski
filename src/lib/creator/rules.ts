@@ -339,7 +339,7 @@ export function validateAvailability(days: CreatorState["availability"]["days"])
 export function orderAmount(item: CreatorItem, promotion: Promotion | undefined, date: string) {
   const valid =
     promotion?.status === "active" &&
-    promotion.itemId === item.id &&
+    (!promotion.itemId || promotion.itemId === item.id) &&
     date.slice(0, 10) >= promotion.start &&
     date.slice(0, 10) <= promotion.end;
   if (!valid || !promotion) return item.price;

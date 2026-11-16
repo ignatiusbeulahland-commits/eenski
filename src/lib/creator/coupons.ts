@@ -26,7 +26,7 @@ export function promotionProblems(p: Promotion, state: Pick<CreatorState, "items
     const item = state.items.find((i) => i.id === p.itemId);
     if (item && p.discount >= item.price) e.discount = "A fixed discount must be less than the product price.";
   }
-  if (!state.items.some((i) => i.id === p.itemId && i.status !== "archived")) e.itemId = "Choose an available product.";
+  if (p.itemId && !state.items.some((i) => i.id === p.itemId && i.status !== "archived")) e.itemId = "Choose an available product.";
   if (p.usageLimit !== undefined && (!Number.isInteger(p.usageLimit) || p.usageLimit < 1)) e.usageLimit = "Usage limit must be a whole number of at least 1.";
   const s = couponStart(p), en = couponEnd(p);
   if (!Number.isFinite(s)) e.start = "Choose a valid start date and time.";

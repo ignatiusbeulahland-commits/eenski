@@ -21,6 +21,11 @@ describe("coupons", () => {
     expect(couponPhase(base, 0, Date.parse("2026-01-01T07:30:00Z"))).toBe("scheduled");
     expect(couponPhase({ ...base, usageLimit: 2 }, 2, Date.parse("2026-01-10T10:00:00Z"))).toBe("used up");
   });
+  it("allows a site-wide coupon with no product chosen", () => {
+    const wide = { ...base, itemId: "" };
+    expect(promotionProblems(wide, state)).toEqual({});
+    expect(orderAmount(item, wide, "2026-01-10T10:00:00Z")).toBe(9000);
+  });
   it("takes a fixed amount off the price", () => {
     expect(orderAmount(item, { ...base, discountType: "fixed", discount: 2500 }, "2026-01-10T10:00:00Z")).toBe(7500);
   });
