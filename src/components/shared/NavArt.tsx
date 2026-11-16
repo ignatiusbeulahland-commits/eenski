@@ -1,4 +1,4 @@
-import { BadgePercent, ChartColumn, Compass, Database, Globe, Handshake, LayoutDashboard, ListChecks, Palette, Shapes } from "lucide-react";
+import { BadgePercent, ChartColumn, Compass, Database, Globe, Handshake, LayoutDashboard, ListChecks, Medal, Palette, Shapes, Stamp } from "lucide-react";
 import type { ComponentType } from "react";
 import { BrandIcon, brandArtwork, iconArtwork } from "@/components/affiliate/BrandIcon";
 import { BrandMark } from "@/components/shared/BrandMark";
@@ -17,6 +17,8 @@ const navOnly = new Map<unknown, string>([
   [Palette, brandArtwork.profile],
   [Globe, brandArtwork.globe],
   [BrandMark, brandArtwork.trophy],
+  [Medal, brandArtwork.graduate],
+  [Stamp, brandArtwork.success],
 ]);
 
 export const navArtFor = (icon: unknown) => iconArtwork.get(icon as never) ?? navOnly.get(icon);
