@@ -18,6 +18,7 @@ import { ItemLink, copyText, itemPaths } from "./shared";
 import { StoreAvatar, StorefrontBranding, usePhotoPicker } from "./StorefrontBranding";
 import { ProductCover, kindArt } from "./products/ProductChrome";
 import { cn } from "@/lib/utils";
+import { StorePageSettings } from "./StorePageSettings";
 
 export const storeUrl = (handle: string) => `${typeof window !== "undefined" ? window.location.origin : "https://ensk.lovable.app"}/store/${handle.toLowerCase()}`;
 
@@ -175,6 +176,8 @@ export function StorefrontPage() {
       </section>
 
       <StorefrontBranding photo={photo} />
+
+      <StorePageSettings />
 
       {/* Editor */}
       <form noValidate onSubmit={save} className="surface overflow-hidden">

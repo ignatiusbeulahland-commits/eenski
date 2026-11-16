@@ -2,7 +2,7 @@ import { COVER_PHOTOS } from "@/components/dreamverse/coverPhotos";
 import type { PaymentRecord } from "@/lib/shop/payments";
 import type { ShopItem } from "@/lib/shop/types";
 import { STORAGE_KEY } from "./data";
-import type { CreatorItem, CreatorState } from "./rules";
+import { stateSchema, type CreatorItem, type CreatorState } from "./rules";
 
 /**
  * Public storefronts for creators who signed up on this device: their published
@@ -19,7 +19,18 @@ export type PublicStore = {
   photo: string;
   owner: string;
   items: CreatorItem[];
+  page: CreatorState["storePage"];
+  verified: boolean;
+  bio: string;
 };
+
+const PAGE_DEFAULT = stateSchema.shape.storePage.parse(undefined);
+
+/** Visible items in the creator's chosen order (unlisted ones keep their saved order at the end). */
+export function orderedItems(items: CreatorItem[], page: Pick<CreatorState["storePage"], "order" | "hiddenIds">): CreatorItem[] {
+  const rank = (id: string) => { const i = page.order.indexOf(id); return i === -1 ? Number.MAX_SAFE_INTEGER : i; };
+  return items.filter((i) => !page.hiddenIds.includes(i.id)).map((it, n) => ({ it, n })).sort((a, b) => rank(a.it.id) - rank(b.it.id) || a.n - b.n).map((x) => x.it);
+}
 
 const TYPE_LABEL: Record<CreatorItem["kind"], string> = { course: "Course", ebook: "eBook", live: "Live session", service: "Service", coaching: "Coaching" };
 const PREFIX = `${STORAGE_KEY}:`;
@@ -44,6 +55,9 @@ function readAll(): PublicStore[] {
         photo: s?.profile?.photo ?? "",
         owner: [s?.profile?.firstName, s?.profile?.lastName].filter(Boolean).join(" ") || f.name,
         items: (s?.items ?? []).filter((it) => it.status === "published" && !it.binnedAt),
+        page: stateSchema.shape.storePage.safeParse(s?.storePage).data ?? PAGE_DEFAULT,
+        verified: s?.verification === "submitted",
+        bio: s?.profile?.bio ?? "",
       });
     } catch {
       /* unreadable record: skip */
