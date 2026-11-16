@@ -67,7 +67,7 @@ export function StoreCustomizePage() {
   if (!handle) {
     return (
       <div>
-        <PageHeader eyebrow="Your store" title="Customise your page" description="Choose how your public creator page looks." />
+        <PageHeader eyebrow="Your store" title="Save your storefront first" description="Step 1: go to Storefront, add your store name and link, then tap Save. Step 2: come back here to customise your page." />
         <div className="surface"><EmptyState icon={Store} title="Add your store name and link first" description="Your page needs a name and a link before you can design and preview it." action={<Button asChild><Link to="/creator/storefront">Set up storefront</Link></Button>} /></div>
       </div>
     );
@@ -78,7 +78,7 @@ export function StoreCustomizePage() {
       <PageHeader
         eyebrow="Your store"
         title="Customise your page"
-        description="Colour, story, video, links and which products show first. The preview shows your full page as visitors will see it."
+        description="Change your colour, story, video, links and which products show first. Check the preview, then tap Save to put your changes live."
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <label className="inline-flex h-11 items-center gap-2 rounded-full border bg-card px-4 text-[13px] font-bold">Sample data <Switch checked={sample} onCheckedChange={setSample} aria-label="Show sample data in the preview" /></label>

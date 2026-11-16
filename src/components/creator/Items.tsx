@@ -56,6 +56,7 @@ import { BrandIcon, brandArtwork } from "@/components/affiliate/BrandIcon";
 import { BinList, BinnedNotice, MoveToBinDialog } from "./products/Bin";
 import { inBin } from "@/lib/creator/bin";
 import { ItemCreator } from "./products/Create";
+import { CourseBuilder } from "./products/CourseBuilder";
 export const kindIcon: Record<ItemKind, LucideIcon> = {
   course: SquarePlay,
   ebook: FileText,
@@ -278,6 +279,13 @@ const withSubtype = (f: CreatorItem, v: string): CreatorItem =>
   : f.kind === "coaching" ? { ...f, coaching: { ...coachingOf(f), focus: v } }
   : f;
 export function ItemEditor({ kind, id, step, onStep }: { kind: ItemKind; id?: string; step?: number; onStep?: (step: number, opts?: { replace?: boolean }) => void }) {
+  const { state } = useCreator();
+  if (kind === "course") {
+    // New courses and unfinished course drafts use the three-step course builder.
+    if (!id) return <CourseBuilder step={step} onStep={onStep} />;
+    const found = state.items.find((i) => i.id === id && i.kind === "course");
+    if (found?.status === "draft" && found.builder) return <CourseBuilder key={found.id} existing={found} />;
+  }
   return id ? <ItemEditForm kind={kind} id={id} /> : <ItemCreator kind={kind} step={step} onStep={onStep} />;
 }
 function ItemEditForm({ kind, id }: { kind: ItemKind; id?: string }) {
