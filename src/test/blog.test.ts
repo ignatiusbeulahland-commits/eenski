@@ -6,7 +6,7 @@ import { featuredPost, filterPosts, getPost, posts } from "@/content/blog";
 import { articleHead, shareImagePath } from "@/content/blog/seo";
 
 describe("main navigation", () => {
-  it("keeps the live Enski site words, with Home first and Dreamers Diary 4th", () => {
+  it("keeps the live Enski site words, with Home first and Dreamers Diary 5th", () => {
     expect(mainNav.map((n) => n.label)).toEqual([
       "Home",
       "Dreamverse",
