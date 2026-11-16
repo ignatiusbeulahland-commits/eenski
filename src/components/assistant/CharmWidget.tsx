@@ -49,6 +49,9 @@ function lastAt(thread: Thread, chats: ReturnType<typeof chatStore.get>) {
 /** Floating Charm button + chat panel, on the public site and every dashboard. */
 export function CharmWidget() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const storePreview = useRouterState({ select: (s) => s.location.pathname.startsWith("/store/") && Boolean((s.location.search as { preview?: boolean }).preview) });
+  // A creator's page preview shows only what visitors see.
+  if (storePreview) return null;
   // Focused journeys (support desk, checkout, receipts, admin, sign-in and welcome) keep the screen to themselves.
   if (/^\/(support|checkout|orders|admin|auth|welcome|onboarding)(\/|$)/.test(pathname)) return null;
   // Money steps keep their action bar clear: withdrawing, adding a payout account and paying.

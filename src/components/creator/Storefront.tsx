@@ -9,7 +9,7 @@ import { Textarea } from "@/components/dashboard-ui/textarea";
 import { Switch } from "@/components/dashboard-ui/switch";
 import { PageHeader, EmptyState } from "@/components/affiliate/ui";
 import { Field } from "@/components/affiliate/Field";
-import { BrandIcon } from "@/components/affiliate/BrandIcon";
+import { BrandIcon, brandArtwork } from "@/components/affiliate/BrandIcon";
 import { naira } from "@/lib/affiliate/products";
 import { useCreator, activityEntry } from "@/lib/creator/store";
 import { kindInfo } from "@/lib/creator/data";
@@ -18,7 +18,6 @@ import { ItemLink, copyText, itemPaths } from "./shared";
 import { StoreAvatar, StorefrontBranding, usePhotoPicker } from "./StorefrontBranding";
 import { ProductCover, kindArt } from "./products/ProductChrome";
 import { cn } from "@/lib/utils";
-import { StorePageSettings } from "./StorePageSettings";
 
 export const storeUrl = (handle: string) => `${typeof window !== "undefined" ? window.location.origin : "https://ensk.lovable.app"}/store/${handle.toLowerCase()}`;
 
@@ -76,6 +75,7 @@ export function StorefrontPage() {
         actions={ready && (
           <div className="flex flex-wrap gap-2">
             {saved.published && <Button asChild><Link to="/store/$handle" params={{ handle: saved.handle.toLowerCase() }} search={{ item: undefined }}><Eye />Open live store</Link></Button>}
+            <Button asChild variant="outline"><Link to="/creator/storefront/customize"><PenLine />Customise page</Link></Button>
             <Button variant="outline" onClick={() => copyText(storeUrl(saved.handle))}><Copy />Copy store link</Button>
           </div>
         )}
@@ -177,7 +177,14 @@ export function StorefrontPage() {
 
       <StorefrontBranding photo={photo} />
 
-      <StorePageSettings />
+      <Link to="/creator/storefront/customize" className="surface group mb-6 flex items-center gap-4 p-5 transition-colors hover:border-cobalt-100 sm:p-6">
+        <BrandIcon src={brandArtwork.market} className="h-12 w-12" />
+        <span className="min-w-0 flex-1">
+          <span className="block text-[15px] font-extrabold group-hover:text-cobalt">Customise your page</span>
+          <span className="block text-[13px] text-muted-foreground">Accent colour, story, welcome video, links, achievements, featured product and order, with a live phone and desktop preview.</span>
+        </span>
+        <PenLine className="h-5 w-5 shrink-0 text-cobalt" aria-hidden="true" />
+      </Link>
 
       {/* Editor */}
       <form noValidate onSubmit={save} className="surface overflow-hidden">

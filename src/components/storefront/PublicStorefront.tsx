@@ -1,5 +1,5 @@
-import { Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, BadgeCheck, BookOpen, Briefcase, Clock, Flag, Instagram, Linkedin, Share2, Star, Store, Twitter, Youtube } from "lucide-react";
+import { Link, useNavigate, useSearch } from "@tanstack/react-router";
+import { ArrowLeft, BadgeCheck, BookOpen, Briefcase, Clock, Eye, Flag, Sparkles, Instagram, Linkedin, Share2, Star, Store, Twitter, Youtube } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -10,25 +10,41 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import enskiLogo from "@/assets/enski-logo.png";
-import { findStore, orderedItems, storeShopItem, type PublicStore } from "@/lib/creator/publicStore";
+import { applyDraft, draftKey, findStore, orderedItems, storeShopItem, TYPE_PLURAL, type PublicStore, type StoreDraft } from "@/lib/creator/publicStore";
+import { useMediaUrl } from "@/lib/creator/useMediaUrl";
+import { REPORT_REASONS, reportPage, type ReportReason } from "@/lib/admin/store";
 import type { CreatorItem, ItemKind } from "@/lib/creator/rules";
 import { useDemoProfile } from "@/lib/demo/profile";
 import { useFollowing } from "@/lib/follows";
 import { fetchReviews, summarizeReviews } from "@/lib/reviews/reviews";
 import { cn } from "@/lib/utils";
 
-import { ACCENT, OfferCard, SectionTitle, TikTokIcon, naira, safeUrl, videoEmbed } from "./parts";
+import { KindCard, KindHeading } from "./KindCards";
+import { ACCENT, SectionTitle, TikTokIcon, naira, safeUrl, videoEmbed } from "./parts";
 
-const KIND_FILTER: Record<ItemKind, string> = { course: "Courses", ebook: "Ebooks", live: "Live sessions", coaching: "Coaching", service: "Services" };
-const INITIAL = 8;
+const KIND_ORDER: ItemKind[] = ["course", "ebook", "live", "coaching", "service"];
+const INITIAL = 4;
 const sheet = "max-sm:bottom-0 max-sm:top-auto max-sm:translate-y-0 max-sm:rounded-b-none max-sm:max-h-[85vh] overflow-y-auto";
 
 type Review = { id: string; name: string; rating: number; body: string; product: string; verified: boolean };
 
 /** A creator's public profile + storefront: identity, credibility, offerings, reviews. */
-export function PublicStorefront({ handle, itemId }: { handle: string; itemId?: string | undefined }) {
+export function PublicStorefront({ handle, itemId, preview = false }: { handle: string; itemId?: string | undefined; preview?: boolean }) {
   const [store, setStore] = useState<PublicStore | null | undefined>(undefined);
-  useEffect(() => setStore(findStore(handle)), [handle]);
+  useEffect(() => {
+    const load = () => {
+      const base = findStore(handle, { preview });
+      if (!base || !preview) { setStore(base); return; }
+      let draft: StoreDraft | null = null;
+      try { draft = JSON.parse(localStorage.getItem(draftKey(handle)) ?? "null") as StoreDraft | null; } catch { draft = null; }
+      setStore(applyDraft(base, draft));
+    };
+    load();
+    if (!preview) return;
+    const onStorage = (e: StorageEvent) => { if (!e.key || e.key === draftKey(handle) || e.key.startsWith("enski-creator")) load(); };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, [handle, preview]);
 
   if (store === undefined) {
     return (
@@ -52,10 +68,10 @@ export function PublicStorefront({ handle, itemId }: { handle: string; itemId?: 
       </div>
     );
   }
-  return <Profile store={store} itemId={itemId} />;
+  return <Profile store={store} itemId={itemId} preview={preview} />;
 }
 
-function Profile({ store, itemId }: { store: PublicStore; itemId?: string | undefined }) {
+function Profile({ store, itemId, preview }: { store: PublicStore; itemId?: string | undefined; preview: boolean }) {
   const { page } = store;
   const accent = ACCENT[page.accent];
   const name = store.name || store.owner;
@@ -75,6 +91,13 @@ function Profile({ store, itemId }: { store: PublicStore; itemId?: string | unde
 
   return (
     <div className="screen-in pb-4">
+      {(preview || store.sample) && (
+        <div className="border-b bg-ice px-4 py-2.5 text-center text-[13px] font-bold text-ink dark:bg-soft">
+          {preview
+            ? <span className="inline-flex flex-wrap items-center justify-center gap-1.5"><Eye className="h-4 w-4 text-cobalt" aria-hidden="true" />Preview{store.hidden ? " · your page is hidden from visitors" : ""}{store.sample ? " · sample products shown" : ""}</span>
+            : <span className="inline-flex items-center gap-1.5"><Sparkles className="h-4 w-4 text-cobalt" aria-hidden="true" />Sample creator page: shows how an Enski storefront looks</span>}
+        </div>
+      )}
       <Hero store={store} name={name} intro={intro} hasMore={Boolean(fullBio && fullBio !== intro)} onMore={() => setOpen("bio")} />
 
       <div className="mx-auto max-w-5xl space-y-10 px-4 pt-8 sm:px-6 sm:space-y-12">
@@ -154,7 +177,7 @@ function Profile({ store, itemId }: { store: PublicStore; itemId?: string | unde
           <ul className="space-y-3">{reviews.list.map((r) => <ReviewCard key={r.id} r={r} />)}</ul>
         </DialogContent>
       </Dialog>
-      <ReportDialog open={open === "report"} onClose={() => setOpen(null)} />
+      <ReportDialog open={open === "report"} onClose={() => setOpen(null)} handle={store.handle} storeName={name} />
     </div>
   );
 }
@@ -230,6 +253,12 @@ function Hero({ store, name, intro, hasMore, onMore }: { store: PublicStore; nam
 }
 
 function WelcomeVideo({ url }: { url: string }) {
+  const vaultId = url.startsWith("vault:") ? url.slice(6) : undefined;
+  const file = useMediaUrl(vaultId);
+  if (vaultId) {
+    if (!file.url) return file.missing ? null : <div className="aspect-video w-full animate-pulse rounded-2xl bg-soft" aria-hidden="true" />;
+    return <div className="overflow-hidden rounded-2xl bg-midnight"><video src={file.url} controls preload="metadata" playsInline className="aspect-video w-full" aria-label="Welcome video" /></div>;
+  }
   const embed = videoEmbed(url);
   const href = safeUrl(url);
   if (!embed && !/\.(mp4|webm|mov)(\?|$)/i.test(url)) return null;
@@ -250,9 +279,10 @@ function ItemSpotlight({ store, item, heading, back, id }: { store: PublicStore;
   const [rating, setRating] = useState<{ average: number; count: number } | null>(null);
   useEffect(() => { void fetchReviews(shopItem.reviewKey ?? shopItem.key).then((r) => setRating(summarizeReviews(r))); }, [shopItem.key, shopItem.reviewKey]);
   const lessons = item.lessons.filter(Boolean).length;
+  const preview = (useSearch({ strict: false }) as { preview?: boolean }).preview ? true : undefined;
   return (
     <section id={id} aria-label={heading} className="scroll-mt-24">
-      <SectionTitle action={back ? <Link to="/store/$handle" params={{ handle: store.handle }} search={{ item: undefined }} className="inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-ink"><ArrowLeft className="h-4 w-4" aria-hidden="true" />All offerings</Link> : undefined}>{heading}</SectionTitle>
+      <SectionTitle action={back ? <Link to="/store/$handle" params={{ handle: store.handle }} search={{ item: undefined, preview }} className="inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-muted-foreground hover:text-ink"><ArrowLeft className="h-4 w-4" aria-hidden="true" />All offerings</Link> : undefined}>{heading}</SectionTitle>
       <div className="surface grid overflow-hidden sm:grid-cols-[minmax(0,280px)_1fr]">
         <ProductCover src={item.image} alt={item.title} kind={item.kind} className="aspect-square w-full" />
         <div className="flex flex-col p-5 sm:p-6">
@@ -269,7 +299,7 @@ function ItemSpotlight({ store, item, heading, back, id }: { store: PublicStore;
           <div className="mt-auto flex flex-wrap items-center gap-3 pt-5">
             <p className="text-2xl font-extrabold tabular-nums text-ink">{item.price ? naira(item.price) : "Free"}</p>
             {item.price > 0 ? (
-              back ? <BuyButton label={item.kind === "course" ? "Get started" : "Buy now"} price={naira(item.price)} item={shopItem} /> : <Link to="/store/$handle" params={{ handle: store.handle }} search={{ item: item.id }} className={cn("inline-flex h-11 items-center rounded-full px-6 text-sm font-extrabold transition-colors", accent.solid)}>View details</Link>
+              back ? <BuyButton label={item.kind === "course" ? "Get started" : "Buy now"} price={naira(item.price)} item={shopItem} /> : <Link to="/store/$handle" params={{ handle: store.handle }} search={{ item: item.id, preview }} className={cn("inline-flex h-11 items-center rounded-full px-6 text-sm font-extrabold transition-colors", accent.solid)}>View details</Link>
             ) : null}
           </div>
         </div>
@@ -279,30 +309,42 @@ function ItemSpotlight({ store, item, heading, back, id }: { store: PublicStore;
 }
 
 function Offerings({ store, items }: { store: PublicStore; items: CreatorItem[] }) {
-  const kinds = (Object.keys(KIND_FILTER) as ItemKind[]).filter((k) => items.some((i) => i.kind === k));
+  const kinds = KIND_ORDER.filter((k) => items.some((i) => i.kind === k));
   const [kind, setKind] = useState<ItemKind | "all">("all");
-  const [all, setAll] = useState(false);
-  const shown = items.filter((i) => kind === "all" || i.kind === kind);
-  const visible = all ? shown : shown.slice(0, INITIAL);
   const accent = store.page.accent;
+  const groups = (kind === "all" ? kinds : [kind]).map((k) => ({ k, list: items.filter((i) => i.kind === k) }));
   return (
     <section aria-labelledby="offerings-title">
       <SectionTitle><span id="offerings-title">Offerings</span></SectionTitle>
       {kinds.length > 1 && (
-        <div className="-mx-4 mb-4 overflow-x-auto px-4 [scrollbar-width:none]" role="group" aria-label="Filter offerings">
+        <div className="-mx-4 mb-6 overflow-x-auto px-4 [scrollbar-width:none]" role="group" aria-label="Filter offerings">
           <div className="flex w-max gap-2">
             {(["all", ...kinds] as const).map((k) => (
-              <button key={k} type="button" aria-pressed={kind === k} onClick={() => { setKind(k); setAll(false); }} className={cn("h-11 shrink-0 rounded-full border px-4 text-sm font-bold transition-colors", kind === k ? ACCENT[accent].solid + " border-transparent" : "bg-card text-ink hover:border-cobalt-100")}>
-                {k === "all" ? "All" : KIND_FILTER[k]}
+              <button key={k} type="button" aria-pressed={kind === k} onClick={() => setKind(k)} className={cn("h-11 shrink-0 rounded-full border px-4 text-sm font-bold transition-colors", kind === k ? ACCENT[accent].solid + " border-transparent" : "bg-card text-ink hover:border-cobalt-100")}>
+                {k === "all" ? `All · ${items.length}` : `${TYPE_PLURAL[k]} · ${items.filter((i) => i.kind === k).length}`}
               </button>
             ))}
           </div>
         </div>
       )}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
-        {visible.map((i) => <OfferCard key={i.id} item={i} shopItem={storeShopItem(store, i)} accent={accent} />)}
+      <div className="space-y-10">
+        {groups.map((g) => <KindShelf key={g.k} store={store} kind={g.k} items={g.list} expanded={kind !== "all"} />)}
       </div>
-      {shown.length > visible.length && <div className="mt-5 text-center"><Button variant="outline" size="lg" onClick={() => setAll(true)}>Explore all offerings ({shown.length})</Button></div>}
+    </section>
+  );
+}
+
+function KindShelf({ store, kind, items, expanded }: { store: PublicStore; kind: ItemKind; items: CreatorItem[]; expanded: boolean }) {
+  const [all, setAll] = useState(false);
+  const visible = all || expanded ? items : items.slice(0, INITIAL);
+  const id = `shelf-${kind}`;
+  return (
+    <section aria-labelledby={id} data-kind={kind}>
+      <KindHeading kind={kind} count={items.length} id={id} />
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+        {visible.map((i) => <KindCard key={i.id} item={i} shopItem={storeShopItem(store, i)} accent={store.page.accent} />)}
+      </div>
+      {items.length > visible.length && <div className="mt-5 text-center"><Button variant="outline" size="lg" onClick={() => setAll(true)}>Explore all {TYPE_PLURAL[kind].toLowerCase()} ({items.length})</Button></div>}
     </section>
   );
 }
@@ -344,14 +386,36 @@ function ReviewCard({ r }: { r: Review }) {
   );
 }
 
-function ReportDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
+function ReportDialog({ open, onClose, handle, storeName }: { open: boolean; onClose: () => void; handle: string; storeName: string }) {
+  const profile = useDemoProfile();
+  const [reason, setReason] = useState<ReportReason | "">("");
   const [text, setText] = useState("");
+  const [err, setErr] = useState("");
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reason) { setErr("Choose what's wrong with this page."); return; }
+    if (reason === "Something else" && text.trim().length < 5) { setErr("Add a few words about the problem."); return; }
+    reportPage({ handle, storeName, reason, details: text, email: profile?.email ?? "" });
+    toast.success("Thanks, your report was sent", { description: "The Enski team will review this page." });
+    setReason(""); setText(""); setErr(""); onClose();
+  };
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className={sheet}>
         <DialogHeader><DialogTitle>Report this page</DialogTitle><DialogDescription>Tell us what's wrong. Our team reviews every report.</DialogDescription></DialogHeader>
-        <form onSubmit={(e) => { e.preventDefault(); if (text.trim().length < 5) { toast.error("Add a few words about the problem."); return; } toast.success("Thanks, your report was sent"); setText(""); onClose(); }} className="space-y-3">
-          <Textarea aria-label="What's wrong" rows={4} value={text} onChange={(e) => setText(e.target.value)} placeholder="e.g. misleading claims, copied content, scam" />
+        <form onSubmit={submit} className="space-y-4" noValidate>
+          <fieldset>
+            <legend className="mb-2 text-sm font-bold text-ink">What's wrong?</legend>
+            <div className="grid gap-2">
+              {REPORT_REASONS.map((r) => (
+                <label key={r} className={cn("flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border px-3 text-sm font-semibold", reason === r ? "border-cobalt bg-ice text-ink dark:bg-soft" : "text-ink hover:border-cobalt-100")}>
+                  <input type="radio" name="report-reason" value={r} checked={reason === r} onChange={() => { setReason(r); setErr(""); }} className="accent-cobalt" />{r}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+          <Textarea aria-label="Details (optional)" rows={3} maxLength={1000} value={text} onChange={(e) => setText(e.target.value)} placeholder="Details (optional): what you saw and where" />
+          {err && <p role="alert" className="text-sm font-semibold text-destructive">{err}</p>}
           <div className="flex justify-end gap-2"><Button type="button" variant="outline" onClick={onClose}>Cancel</Button><Button type="submit">Send report</Button></div>
         </form>
       </DialogContent>

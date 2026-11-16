@@ -1,35 +1,29 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Camera, Check, ImagePlus, Loader2, PenLine, Trash2, Upload, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/dashboard-ui/button";
 import { Input } from "@/components/dashboard-ui/input";
 import { Field } from "@/components/affiliate/Field";
-import { ImageUpload } from "./ImageUpload";
+import { useCropPicker } from "./CropPicker";
 import { CreatorAvatar } from "./Header";
 import { useCreator, activityEntry } from "@/lib/creator/store";
-import { COVER_TYPES, readCoverFile, validateCoverFile } from "@/lib/creator/cover";
-import { BANNER_SIZE, BANNER_STYLES, HEADLINE_MAX, SUBLINE_MAX, renderBanner, tidyBannerWords, type BannerStyle } from "@/lib/creator/banner";
+import { BANNER_STYLES, HEADLINE_MAX, SUBLINE_MAX, renderBanner, tidyBannerWords, type BannerStyle } from "@/lib/creator/banner";
 import { cn } from "@/lib/utils";
 
-/** Profile photo picker shared by the storefront preview and the branding panel; saves to the Creator profile. */
+/** Profile photo picker shared by the storefront preview and the branding panel; checks 1080 × 1080, crops square, saves to the Creator profile. */
 export function usePhotoPicker() {
   const { update } = useCreator();
-  const ref = useRef<HTMLInputElement>(null);
-  const [busy, setBusy] = useState(false);
-  const take = async (file?: File) => {
-    if (!file) return;
-    const problem = validateCoverFile(file);
-    if (problem) { toast.error(problem); return; }
-    setBusy(true);
-    try {
-      const photo = await readCoverFile(file, 480);
+  const picker = useCropPicker({
+    aspect: 1,
+    outWidth: 480,
+    round: true,
+    title: "Crop your profile photo",
+    onDone: (photo) => {
       update((s) => ({ profile: { ...s.profile, photo }, activity: [...s.activity, activityEntry("Profile photo updated")] }));
       toast.success("Profile photo updated");
-    } catch { toast.error("We couldn't read that image. Try another file."); }
-    finally { setBusy(false); if (ref.current) ref.current.value = ""; }
-  };
-  const input = <input ref={ref} type="file" accept={COVER_TYPES.join(",")} className="sr-only" tabIndex={-1} aria-hidden="true" onChange={(e) => void take(e.target.files?.[0])} />;
-  return { open: () => ref.current?.click(), busy, input };
+    },
+  });
+  return { open: picker.open, busy: picker.busy, input: picker.element };
 }
 
 /** Storefront avatar: the uploaded photo when there is one, otherwise the Creator avatar. */
@@ -49,6 +43,7 @@ export function StorefrontBranding({ photo }: { photo: ReturnType<typeof usePhot
 
   const saveBanner = (banner: string, bannerSource: "none" | "upload" | "designed", extra: Partial<typeof sf> = {}, note = "Storefront banner updated") =>
     update((s) => ({ storefront: { ...s.storefront, ...extra, banner, bannerSource }, activity: [...s.activity, activityEntry(note)] }));
+  const bannerPicker = useCropPicker({ aspect: 3, outWidth: 1500, title: "Crop your banner", onDone: (v) => { saveBanner(v, "upload", {}, "Storefront banner uploaded"); toast.success("Banner uploaded"); } });
 
   const design = async () => {
     const t = tidyBannerWords(words.headline, words.subline);
@@ -83,7 +78,7 @@ export function StorefrontBranding({ photo }: { photo: ReturnType<typeof usePhot
           </div>
           <div className="min-w-0">
             <p className="text-[13px] font-bold">Profile photo</p>
-            <p className="mt-0.5 text-xs text-muted-foreground">Square images work best. Also shows on your profile.</p>
+            <p className="mt-0.5 text-xs text-muted-foreground">At least 1080 × 1080 px. You can crop it before saving. Also shows on your profile.</p>
             <div className="mt-2.5 flex flex-wrap gap-2">
               <Button type="button" size="sm" variant="outline" onClick={photo.open} disabled={photo.busy}><Camera />{hasPhoto ? "Change photo" : "Upload photo"}</Button>
               {hasPhoto && (
@@ -107,15 +102,17 @@ export function StorefrontBranding({ photo }: { photo: ReturnType<typeof usePhot
           </div>
 
           {mode === "upload" ? (
-            <ImageUpload
-              id="store-banner-upload"
-              label="Your banner image"
-              hint={`JPG, PNG or WebP · up to 5 MB · best at ${BANNER_SIZE.width} × ${BANNER_SIZE.height}`}
-              aspect="aspect-[16/5]"
-              maxSide={1600}
-              value={sf.bannerSource === "upload" ? sf.banner : ""}
-              onChange={(v) => { saveBanner(v, v ? "upload" : "none", {}, v ? "Storefront banner uploaded" : "Storefront banner removed"); toast.success(v ? "Banner uploaded" : "Banner removed"); }}
-            />
+            <div className="space-y-3">
+              <div data-surface="dark" className="bg-brand-panel relative aspect-[3/1] w-full overflow-hidden rounded-[16px] ring-1 ring-line">
+                {sf.bannerSource === "upload" && sf.banner ? <img src={sf.banner} alt="Your banner" className="h-full w-full object-cover" /> : <span className="absolute inset-0 grid place-items-center text-sm font-bold text-on-dark-muted">No banner uploaded yet</span>}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={bannerPicker.open} disabled={bannerPicker.busy}><Upload />{sf.bannerSource === "upload" && sf.banner ? "Replace banner" : "Upload banner"}</Button>
+                {sf.bannerSource === "upload" && sf.banner && <Button type="button" variant="quiet" size="sm" onClick={() => { saveBanner("", "none", {}, "Storefront banner removed"); toast.success("Banner removed"); }}><Trash2 />Remove</Button>}
+              </div>
+              <p className="text-xs text-muted-foreground">JPG, PNG or WebP · up to 5 MB · at least 1080 × 1080 px. You'll crop it to a wide banner before it's saved.</p>
+              {bannerPicker.element}
+            </div>
           ) : (
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
