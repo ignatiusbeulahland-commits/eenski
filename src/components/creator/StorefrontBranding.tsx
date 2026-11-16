@@ -4,10 +4,9 @@ import { toast } from "sonner";
 import { Button } from "@/components/dashboard-ui/button";
 import { Input } from "@/components/dashboard-ui/input";
 import { Field } from "@/components/affiliate/Field";
-import { ImageUpload } from "./ImageUpload";
+import { useCropPicker } from "./CropPicker";
 import { CreatorAvatar } from "./Header";
 import { useCreator, activityEntry } from "@/lib/creator/store";
-import { COVER_TYPES, readCoverFile, validateCoverFile } from "@/lib/creator/cover";
 import { BANNER_SIZE, BANNER_STYLES, HEADLINE_MAX, SUBLINE_MAX, renderBanner, tidyBannerWords, type BannerStyle } from "@/lib/creator/banner";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +43,7 @@ export function StorefrontBranding({ photo }: { photo: ReturnType<typeof usePhot
 
   const saveBanner = (banner: string, bannerSource: "none" | "upload" | "designed", extra: Partial<typeof sf> = {}, note = "Storefront banner updated") =>
     update((s) => ({ storefront: { ...s.storefront, ...extra, banner, bannerSource }, activity: [...s.activity, activityEntry(note)] }));
+  const bannerPicker = useCropPicker({ aspect: 3, outWidth: 1500, title: "Crop your banner", onDone: (v) => { saveBanner(v, "upload", {}, "Storefront banner uploaded"); toast.success("Banner uploaded"); } });
 
   const design = async () => {
     const t = tidyBannerWords(words.headline, words.subline);
