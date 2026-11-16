@@ -39,7 +39,7 @@ export const highlights: Record<LegalKey, string[]> = {
   cookies: [
     "Essential cookies keep sign-in and security working and can't be switched off.",
     "Analytics, preference and marketing cookies are your choice.",
-    "Your choice is saved on this device and can be changed any time below.",
+    "You can change your choice at any time below.",
   ],
   copyright: [
     "Creators keep ownership of everything they upload.",

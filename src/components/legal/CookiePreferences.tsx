@@ -30,7 +30,7 @@ export function CookiePreferences() {
     <section id="preferences" aria-labelledby="cookie-prefs" className="mt-8 rounded-3xl border border-border bg-card p-6 sm:p-8">
       <h2 id="cookie-prefs" className="text-lg font-extrabold text-ink">Your cookie preferences</h2>
       <p className="mt-1 text-sm text-muted-foreground">
-        {savedAt ? `Last saved ${new Date(savedAt).toLocaleDateString()} on this device.` : "Choose what Enski may use on this device."}
+        {savedAt ? `Last saved ${new Date(savedAt).toLocaleDateString()}.` : "Choose which cookies Enski may use."}
       </p>
       <ul className="mt-5 divide-y divide-border">
         {rows.map((r) => (
