@@ -365,12 +365,12 @@ const blank = { first: "", last: "", email: "", phone: "", product: "", type: "f
 function EnrolDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const { state, update } = useCreator();
   const [v, setV] = useState(blank);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof typeof blank, string>>>({});
   const items = state.items.filter((i) => i.status !== "archived");
   const options: [string, string][] = [...items.map((i) => [i.id, i.title] as [string, string]), ...SAMPLE_PRODUCTS.map((p, i) => [`sample:${i}`, `${p.title} (sample)`] as [string, string])];
   const set = (k: keyof typeof blank, x: string) => setV((s) => ({ ...s, [k]: x }));
   const submit = () => {
-    const e: Record<string, string> = {};
+    const e: Partial<Record<keyof typeof blank, string>> = {};
     if (!v.first.trim()) e.first = "Enter a first name.";
     if (!v.last.trim()) e.last = "Enter a last name.";
     if (!isEmail(v.email)) e.email = "Enter a valid email address.";
@@ -395,7 +395,7 @@ function EnrolDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (v: 
     setV(blank);
     onOpenChange(false);
   };
-  const err = (k: string) => errors[k] && <p role="alert" className="mt-1 text-xs text-destructive">{errors[k]}</p>;
+  const err = (k: keyof typeof blank) => errors[k] && <p role="alert" className="mt-1 text-xs text-destructive">{errors[k]}</p>;
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) setErrors({}); onOpenChange(o); }}>
       <DialogContent className="max-h-[92dvh] overflow-y-auto">

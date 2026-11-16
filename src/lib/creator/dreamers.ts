@@ -179,7 +179,7 @@ export interface DreamerFilters { channel: Channel | "all"; kinds: ItemKind[]; s
 export const emptyFilters: DreamerFilters = { channel: "all", kinds: [], statuses: [], from: "", to: "" };
 export function filterDreamers(list: Dreamer[], q: string, f: DreamerFilters) {
   const needle = q.trim().toLowerCase();
-  const digits = needle.replace(/\D/g, "");
+  const digits = needle.replace(/\D/g, "").replace(/^0/, "");
   return list.filter((d) => {
     if (needle && !(d.name.toLowerCase().includes(needle) || d.email.toLowerCase().includes(needle) || (digits.length >= 3 && d.phone.replace(/\D/g, "").includes(digits)))) return false;
     if (f.channel !== "all" && d.channel !== f.channel) return false;
