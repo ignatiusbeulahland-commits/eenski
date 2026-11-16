@@ -200,7 +200,7 @@ function Hero({ store, name, intro, hasMore, onMore }: { store: PublicStore; nam
         {store.banner && <img src={store.banner} alt="" fetchPriority="high" className="h-full w-full object-cover" style={{ objectPosition: `50% ${page.bannerY}%` }} />}
       </div>
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        <div className="-mt-11 flex items-end justify-between gap-3 sm:-mt-14">
+        <div className="relative -mt-11 flex items-end justify-between gap-3 sm:-mt-14">
           <div className="grid h-[88px] w-[88px] shrink-0 place-items-center overflow-hidden rounded-full bg-card text-3xl font-extrabold text-brand ring-4 ring-background sm:h-28 sm:w-28">
             {store.photo ? <img src={store.photo} alt={name} className="h-full w-full object-cover" /> : name.slice(0, 1).toUpperCase()}
           </div>
