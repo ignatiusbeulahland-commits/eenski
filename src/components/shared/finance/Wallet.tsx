@@ -76,7 +76,6 @@ export function MultiCurrencyWallet({ balances, displayCurrency, onWithdraw, acc
             <Button
               variant="lime"
               size="lg"
-              disabled={b.available <= 0}
               onClick={() => onWithdraw(b.currency)}
               className="h-13 w-full px-7 text-base shadow-[0_10px_30px_-8px] shadow-lime/50 sm:w-auto"
             >
