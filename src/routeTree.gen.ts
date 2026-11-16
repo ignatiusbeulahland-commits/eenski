@@ -16,16 +16,21 @@ import { Route as AffiliateRouteRouteImport } from './routes/affiliate/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as BecomeAnAmbassadorRouteImport } from './routes/become-an-ambassador'
 import { Route as CommunityRouteImport } from './routes/community'
+import { Route as CookiesSettingsRouteImport } from './routes/cookies-settings'
+import { Route as CopyrightPolicyRouteImport } from './routes/copyright-policy'
 import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as CreatorRouteRouteImport } from './routes/creator/route'
 import { Route as DreamersTrybeRouteImport } from './routes/dreamers-trybe'
 import { Route as DreamverseRouteImport } from './routes/dreamverse'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as FeaturesRouteImport } from './routes/features'
+import { Route as KycPolicyRouteImport } from './routes/kyc-policy'
 import { Route as LearnerRouteRouteImport } from './routes/learner/route'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
 import { Route as SupportRouteRouteImport } from './routes/support/route'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as VerifyRouteImport } from './routes/verify'
 import { Route as WelcomeRouteImport } from './routes/welcome'
 import { Route as WishlistRouteImport } from './routes/wishlist'
@@ -256,6 +261,16 @@ const CommunityRoute = CommunityRouteImport.update({
   path: '/community',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CookiesSettingsRoute = CookiesSettingsRouteImport.update({
+  id: '/cookies-settings',
+  path: '/cookies-settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CopyrightPolicyRoute = CopyrightPolicyRouteImport.update({
+  id: '/copyright-policy',
+  path: '/copyright-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CoursesRoute = CoursesRouteImport.update({
   id: '/courses',
   path: '/courses',
@@ -286,6 +301,11 @@ const FeaturesRoute = FeaturesRouteImport.update({
   path: '/features',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KycPolicyRoute = KycPolicyRouteImport.update({
+  id: '/kyc-policy',
+  path: '/kyc-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LearnerRouteRoute = LearnerRouteRouteImport.update({
   id: '/learner',
   path: '/learner',
@@ -301,9 +321,19 @@ const PricingRoute = PricingRouteImport.update({
   path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SupportRouteRoute = SupportRouteRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerifyRoute = VerifyRouteImport.update({
@@ -1347,13 +1377,18 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/become-an-ambassador': typeof BecomeAnAmbassadorRoute
   '/community': typeof CommunityRoute
+  '/cookies-settings': typeof CookiesSettingsRoute
+  '/copyright-policy': typeof CopyrightPolicyRoute
   '/courses': typeof CoursesRoute
   '/dreamers-trybe': typeof DreamersTrybeRoute
   '/dreamverse': typeof DreamverseRoute
   '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
+  '/kyc-policy': typeof KycPolicyRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
   '/welcome': typeof WelcomeRoute
   '/wishlist': typeof WishlistRoute
@@ -1555,13 +1590,18 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/become-an-ambassador': typeof BecomeAnAmbassadorRoute
   '/community': typeof CommunityRoute
+  '/cookies-settings': typeof CookiesSettingsRoute
+  '/copyright-policy': typeof CopyrightPolicyRoute
   '/courses': typeof CoursesRoute
   '/dreamers-trybe': typeof DreamersTrybeRoute
   '/dreamverse': typeof DreamverseRoute
   '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
+  '/kyc-policy': typeof KycPolicyRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
   '/welcome': typeof WelcomeRoute
   '/wishlist': typeof WishlistRoute
@@ -1769,13 +1809,18 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/become-an-ambassador': typeof BecomeAnAmbassadorRoute
   '/community': typeof CommunityRoute
+  '/cookies-settings': typeof CookiesSettingsRoute
+  '/copyright-policy': typeof CopyrightPolicyRoute
   '/courses': typeof CoursesRoute
   '/dreamers-trybe': typeof DreamersTrybeRoute
   '/dreamverse': typeof DreamverseRoute
   '/faq': typeof FaqRoute
   '/features': typeof FeaturesRoute
+  '/kyc-policy': typeof KycPolicyRoute
   '/onboarding': typeof OnboardingRoute
   '/pricing': typeof PricingRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/terms': typeof TermsRoute
   '/verify': typeof VerifyRoute
   '/welcome': typeof WelcomeRoute
   '/wishlist': typeof WishlistRoute
@@ -1984,13 +2029,18 @@ export interface FileRouteTypes {
     | '/auth'
     | '/become-an-ambassador'
     | '/community'
+    | '/cookies-settings'
+    | '/copyright-policy'
     | '/courses'
     | '/dreamers-trybe'
     | '/dreamverse'
     | '/faq'
     | '/features'
+    | '/kyc-policy'
     | '/onboarding'
     | '/pricing'
+    | '/privacy-policy'
+    | '/terms'
     | '/verify'
     | '/welcome'
     | '/wishlist'
@@ -2192,13 +2242,18 @@ export interface FileRouteTypes {
     | '/auth'
     | '/become-an-ambassador'
     | '/community'
+    | '/cookies-settings'
+    | '/copyright-policy'
     | '/courses'
     | '/dreamers-trybe'
     | '/dreamverse'
     | '/faq'
     | '/features'
+    | '/kyc-policy'
     | '/onboarding'
     | '/pricing'
+    | '/privacy-policy'
+    | '/terms'
     | '/verify'
     | '/welcome'
     | '/wishlist'
@@ -2405,13 +2460,18 @@ export interface FileRouteTypes {
     | '/auth'
     | '/become-an-ambassador'
     | '/community'
+    | '/cookies-settings'
+    | '/copyright-policy'
     | '/courses'
     | '/dreamers-trybe'
     | '/dreamverse'
     | '/faq'
     | '/features'
+    | '/kyc-policy'
     | '/onboarding'
     | '/pricing'
+    | '/privacy-policy'
+    | '/terms'
     | '/verify'
     | '/welcome'
     | '/wishlist'
@@ -2619,13 +2679,18 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   BecomeAnAmbassadorRoute: typeof BecomeAnAmbassadorRoute
   CommunityRoute: typeof CommunityRoute
+  CookiesSettingsRoute: typeof CookiesSettingsRoute
+  CopyrightPolicyRoute: typeof CopyrightPolicyRoute
   CoursesRoute: typeof CoursesRoute
   DreamersTrybeRoute: typeof DreamersTrybeRoute
   DreamverseRoute: typeof DreamverseRoute
   FaqRoute: typeof FaqRoute
   FeaturesRoute: typeof FeaturesRoute
+  KycPolicyRoute: typeof KycPolicyRoute
   OnboardingRoute: typeof OnboardingRoute
   PricingRoute: typeof PricingRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  TermsRoute: typeof TermsRoute
   VerifyRoute: typeof VerifyRoute
   WelcomeRoute: typeof WelcomeRoute
   WishlistRoute: typeof WishlistRoute
@@ -2698,6 +2763,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommunityRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cookies-settings': {
+      id: '/cookies-settings'
+      path: '/cookies-settings'
+      fullPath: '/cookies-settings'
+      preLoaderRoute: typeof CookiesSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/copyright-policy': {
+      id: '/copyright-policy'
+      path: '/copyright-policy'
+      fullPath: '/copyright-policy'
+      preLoaderRoute: typeof CopyrightPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/courses': {
       id: '/courses'
       path: '/courses'
@@ -2740,6 +2819,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FeaturesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kyc-policy': {
+      id: '/kyc-policy'
+      path: '/kyc-policy'
+      fullPath: '/kyc-policy'
+      preLoaderRoute: typeof KycPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/learner': {
       id: '/learner'
       path: '/learner'
@@ -2761,11 +2847,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/support': {
       id: '/support'
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof SupportRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verify': {
@@ -4547,13 +4647,18 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   BecomeAnAmbassadorRoute: BecomeAnAmbassadorRoute,
   CommunityRoute: CommunityRoute,
+  CookiesSettingsRoute: CookiesSettingsRoute,
+  CopyrightPolicyRoute: CopyrightPolicyRoute,
   CoursesRoute: CoursesRoute,
   DreamersTrybeRoute: DreamersTrybeRoute,
   DreamverseRoute: DreamverseRoute,
   FaqRoute: FaqRoute,
   FeaturesRoute: FeaturesRoute,
+  KycPolicyRoute: KycPolicyRoute,
   OnboardingRoute: OnboardingRoute,
   PricingRoute: PricingRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
+  TermsRoute: TermsRoute,
   VerifyRoute: VerifyRoute,
   WelcomeRoute: WelcomeRoute,
   WishlistRoute: WishlistRoute,

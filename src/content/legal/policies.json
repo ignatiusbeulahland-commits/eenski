@@ -1,0 +1,360 @@
+{
+ "privacy": {
+  "title": "Privacy Policy",
+  "effective": "June 1, 2026",
+  "notice": null,
+  "intro": [],
+  "sections": [
+   {
+    "n": "1",
+    "title": "Information We Collect",
+    "blocks": [
+     "We collect information you provide directly to us, including your name, email address, phone number, and payment information when you create an account, make a purchase, or communicate with us.",
+     "We also automatically collect certain information when you use our platform, including your IP address, browser type, device information, and usage data.",
+     "For the security of your account, we keep a record of each browser or device that signs in: the device name, the full IP address, an approximate city and country worked out on our own server from that address (the address is not sent to another company), and the times it signed in and was last used. You can see this list in your account settings and sign any device out. Our staff who can view your account details can also see it. A record is deleted automatically after 90 days without use.",
+     "When something goes wrong on our platform we keep a technical error report so we can fix it. It holds which account was signed in, a shortened version of the IP address (its last part removed), a device label such as \"Chrome on Android\", the page, and a description of what went wrong with personal details and secrets removed. It never holds what you typed or sent to us. Detailed error reports are deleted automatically after 30 days, and the summary of a problem after at most a year."
+    ]
+   },
+   {
+    "n": "2",
+    "title": "How We Use Your Information",
+    "blocks": [
+     "We use the information we collect to:",
+     [
+      "Provide, maintain, and improve our platform and services",
+      "Process transactions and send related information",
+      "Send you technical notices, updates, security alerts, and support messages",
+      "Respond to your comments, questions, and requests",
+      "Monitor and analyze trends, usage, and activities",
+      "Detect, investigate, and prevent fraudulent transactions and abuse"
+     ]
+    ]
+   },
+   {
+    "n": "3",
+    "title": "Information Sharing",
+    "blocks": [
+     "We do not sell your personal information. We may share your information with third-party service providers who perform services on our behalf, such as payment processing, data analysis, email delivery, and hosting services."
+    ]
+   },
+   {
+    "n": "4",
+    "title": "Data Security",
+    "blocks": [
+     "We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction."
+    ]
+   },
+   {
+    "n": "5",
+    "title": "Your Rights",
+    "blocks": [
+     "You have the right to access, update, or delete your personal information. You may also object to or restrict certain processing of your data. To exercise these rights, please contact us using the information below."
+    ]
+   },
+   {
+    "n": "6",
+    "title": "Contact Us",
+    "blocks": [
+     "If you have any questions about this Privacy Policy, please contact us at [support@enski.net](mailto:support@enski.net)."
+    ]
+   }
+  ]
+ },
+ "terms": {
+  "title": "Terms of Service",
+  "effective": "June 1, 2026",
+  "notice": "Draft for client review. The governing law in section 11 is a proposal the client must confirm, and the effective date changes once the client approves.",
+  "intro": [],
+  "sections": [
+   {
+    "n": "1",
+    "title": "Acceptance of Terms",
+    "blocks": [
+     "By accessing or using the Enski platform, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services."
+    ]
+   },
+   {
+    "n": "2",
+    "title": "Account Registration",
+    "blocks": [
+     "You must create an account to access certain features. You are responsible for maintaining the confidentiality of your account credentials and for all activities under your account. You must provide accurate and complete information."
+    ]
+   },
+   {
+    "n": "3",
+    "title": "User Conduct",
+    "blocks": [
+     "You agree not to:",
+     [
+      "Use the platform for any unlawful purpose",
+      "Infringe on the intellectual property rights of others",
+      "Upload malicious code or content",
+      "Attempt to gain unauthorized access to our systems",
+      "Harass, abuse, or harm other users"
+     ]
+    ]
+   },
+   {
+    "n": "4",
+    "title": "Intellectual Property",
+    "blocks": [
+     "All content on the Enski platform, including courses, materials, and software, is protected by copyright and other intellectual property laws. You may not reproduce, distribute, or create derivative works without our express permission."
+    ]
+   },
+   {
+    "n": "5",
+    "title": "Payments and Fees",
+    "blocks": [
+     "All payments are processed securely through our payment partners. Prices are subject to change, but changes will not affect purchases already made. You are responsible for all applicable taxes."
+    ]
+   },
+   {
+    "n": "6",
+    "title": "Termination",
+    "blocks": [
+     "We reserve the right to suspend or terminate your account at our discretion, particularly if you violate these terms. You may also terminate your account at any time by contacting us."
+    ]
+   },
+   {
+    "n": "7",
+    "title": "Limitation of Liability",
+    "blocks": [
+     "Enski shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of the platform, to the maximum extent permitted by law."
+    ]
+   },
+   {
+    "n": "9",
+    "title": "Imported Landing Pages",
+    "blocks": [
+     "Creators may publish a landing page they made with an outside design or AI tool by uploading it as an HTML file (\"an imported page\"). This section applies to imported pages in addition to the rest of these Terms.",
+     "The creator is solely responsible for everything on their imported page, including its text, pictures, videos, links, scripts and forms, and for having the right to use all of it. The creator promises that the page:",
+     [
+      "is not misleading, fraudulent or a scam, and does not pretend to be another person, business or Enski;",
+      "does not ask visitors for passwords, card numbers, bank details or other sensitive information, and does not collect such information in any other way;",
+      "does not contain malware, hidden tracking meant to harm visitors, or anything meant to damage a visitor's device or account;",
+      "does not infringe anyone's copyright, trademark or privacy, and does not contain unlawful, hateful or harmful material; and",
+      "follows our [Copyright Policy](/copyright-policy) and the rest of these Terms."
+     ],
+     "Imported pages go live without review by Enski. Publishing a page does not mean Enski has checked or approved it, or endorses it.",
+     "To protect visitors, an imported page is shown inside a restricted frame. Some features of a design may therefore not work (for example scripts on a \"Static\" page, videos from services other than Vimeo, or sending a form anywhere other than to Enski). Sign-up forms on an imported page save the visitor's details to the creator's leads in Enski. Enski adds a small \"Powered by Enski\" mark and a \"Report\" mark to every imported page, and the creator may not hide or remove them.",
+     "Anyone can report an imported page using the \"Report\" mark on the page or the \"Report a Page\" form linked in the site footer. A report may include a reason, details and, optionally, an email address. We store a one-way code instead of the reporter's internet address, so we can count each reporter once. Reports are used only to review pages and are not shown to the creator.",
+     "If several different people report a page within a short time, the page may be switched off automatically. Enski staff may also switch a page off, or back on, at any time and for any reason, including a suspected breach of these Terms. A switched-off page shows a short \"This page is unavailable\" notice and no longer collects sign-ups. We tell the creator by notification and email and give the general reason. A creator who believes a page was switched off by mistake can contact us at [support@enski.net](mailto:support@enski.net) to ask for a review. We may keep the page's content and reports for as long as needed to review the matter and to meet legal obligations.",
+     "Enski may suspend or close the account of a creator who publishes harmful pages or whose pages are repeatedly switched off, as set out in the Termination section.",
+     "The creator is responsible for what they do with the details visitors enter on their imported page, including telling visitors how those details will be used and following the privacy laws that apply to the creator. Enski stores the details for the creator and makes them available to the creator only.",
+     "Enski does not guarantee that an imported page will look or work exactly as designed in every browser, or that it will always be available. Enski is not responsible for the content of imported pages or for losses caused by them, to the extent the law allows."
+    ]
+   },
+   {
+    "n": "10",
+    "title": "Changes to Terms",
+    "blocks": [
+     "We may update these terms from time to time. We will notify you of material changes via email or through the platform. Continued use after changes constitutes acceptance."
+    ]
+   },
+   {
+    "n": "11",
+    "title": "Governing Law",
+    "blocks": [
+     "These Terms are governed by the laws of the Federal Republic of Nigeria. Disputes are first raised with us at [support@enski.net](mailto:support@enski.net) so we can try to resolve them informally before any other step is taken."
+    ]
+   },
+   {
+    "n": "12",
+    "title": "Contact Us",
+    "blocks": [
+     "If you have any questions about these Terms, please contact us at [support@enski.net](mailto:support@enski.net)."
+    ]
+   }
+  ]
+ },
+ "cookies": {
+  "title": "Cookie Settings",
+  "effective": null,
+  "notice": null,
+  "intro": [
+   "Learn about how we use cookies and how to manage your preferences."
+  ],
+  "sections": [
+   {
+    "n": null,
+    "title": "What Are Cookies?",
+    "blocks": [
+     "Cookies are small text files that are placed on your device when you visit a website. They are widely used to make websites work efficiently and to provide information to website owners."
+    ]
+   },
+   {
+    "n": null,
+    "title": "How We Use Cookies",
+    "blocks": [
+     "We use cookies for the following purposes:",
+     [
+      "**Essential Cookies:** These are necessary for the website to function properly. They enable core functionality such as security, network management, and account access.",
+      "**Analytics Cookies:** These help us understand how visitors interact with our website by collecting and reporting information anonymously.",
+      "**Preference Cookies:** These allow the website to remember choices you make (such as your language or region) and provide enhanced, more personal features.",
+      "**Marketing Cookies:** These are used to track visitors across websites to display relevant advertisements."
+     ]
+    ]
+   },
+   {
+    "n": null,
+    "title": "Managing Cookies",
+    "blocks": [
+     "You can control and/or delete cookies as you wish. You can delete all cookies that are already on your computer and you can set most browsers to prevent them from being placed.",
+     "If you do this, however, you may have to manually adjust some preferences every time you visit a site, and some services and functionalities may not work."
+    ]
+   },
+   {
+    "n": null,
+    "title": "Third-Party Cookies",
+    "blocks": [
+     "In some special cases, we also use cookies provided by trusted third parties. The following section details which third-party cookies you might encounter through this site."
+    ]
+   },
+   {
+    "n": null,
+    "title": "More Information",
+    "blocks": [
+     "For more information about cookies and how to manage them, visit [www.allaboutcookies.org](https://www.allaboutcookies.org/)."
+    ]
+   }
+  ]
+ },
+ "copyright": {
+  "title": "Copyright Policy",
+  "effective": "to be confirmed",
+  "notice": "Draft wording, waiting for approval. Not legal advice.",
+  "intro": [],
+  "sections": [
+   {
+    "n": "1",
+    "title": "What this page is for",
+    "blocks": [
+     "Enski is a place where creators sell courses, ebooks, live sessions, coaching and services, and where learners buy them. This page explains who owns what, what you may do with what you buy, and what to do if you think something on Enski copies your work. It sits alongside our Terms of Service (section 4, Intellectual Property)."
+    ]
+   },
+   {
+    "n": "2",
+    "title": "Creators keep ownership of their work",
+    "blocks": [
+     "If you upload a course, video, ebook, material or image, you keep ownership of it. You give Enski permission to store it, show it to the people who are meant to see it, and sell it on the platform. Removing a product stops new sales."
+    ]
+   },
+   {
+    "n": "3",
+    "title": "Only upload what you have the right to use",
+    "blocks": [
+     "You may upload only content that you created, or that you have clear permission to sell. That includes videos, music, photographs, fonts, slides, templates and the work of other teachers or companies. You are responsible for any claim made about what you upload. Please do not upload someone else's course, ebook or video, even if you bought a copy."
+    ]
+   },
+   {
+    "n": "4",
+    "title": "What learners can do with what they buy",
+    "blocks": [
+     "When you buy a product you get access for your own learning. You may not copy it, resell it, share your login, post it online or hand it to other people. Do not try to remove watermarks or get around the way we protect files."
+    ]
+   },
+   {
+    "n": "5",
+    "title": "How we protect creators' files",
+    "blocks": [
+     "Course videos are kept privately and played through a link that expires. Ebooks are shown in our reader as page images, and each page carries a watermark with the reader's name and email. Downloadable materials are available only to people who bought the product. Our staff can open a product's files to review it, and those views are recorded. These steps make copying harder; they cannot stop it completely."
+    ]
+   },
+   {
+    "n": "6",
+    "title": "If you think your work has been copied",
+    "blocks": [
+     "Email us at [support@enski.net](mailto:support@enski.net) with: your name and contact details; a link to the Enski page you believe copies your work; proof that the work is yours (for example the original file with its date, or a link to where you first published it); a short statement that you did not give permission; and a statement that your information is accurate. Please send one complaint per product. We review genuine complaints promptly."
+    ]
+   },
+   {
+    "n": "7",
+    "title": "What we may do",
+    "blocks": [
+     "When a complaint looks genuine, our staff can suspend the product while we look into it. While a product is suspended it cannot be bought, and the earnings from it are held until the matter is settled. We may ask the creator to explain, and we may remove the product or close an account that keeps copying other people's work. If we remove something by mistake, tell us and we will review it."
+    ]
+   },
+   {
+    "n": "8",
+    "title": "Our own content",
+    "blocks": [
+     "The Enski name, logo, website design and software belong to Enski. Please do not copy them or use them in a way that suggests we endorse you without our written permission."
+    ]
+   },
+   {
+    "n": "9",
+    "title": "Contact",
+    "blocks": [
+     "If you have any questions about this policy, please contact us at [support@enski.net](mailto:support@enski.net)."
+    ]
+   }
+  ]
+ },
+ "kyc": {
+  "title": "KYC Policy",
+  "effective": "to be confirmed",
+  "notice": "Draft wording, waiting for approval. Not legal advice.",
+  "intro": [],
+  "sections": [
+   {
+    "n": "1",
+    "title": "Who this applies to",
+    "blocks": [
+     "Learners who only buy on Enski do not need to prove who they are, beyond a verified email address. The checks below apply to creators and affiliates, because they can earn money and ask us to pay it out."
+    ]
+   },
+   {
+    "n": "2",
+    "title": "Why we check",
+    "blocks": [
+     "We check who is being paid so that money goes to the right person, so that nobody can collect payouts in someone else's name, and to protect creators, buyers and Enski from fraud. Please give accurate information. False details can lead to your payouts being held or your account being closed."
+    ]
+   },
+   {
+    "n": "3",
+    "title": "What we check",
+    "blocks": [
+     [
+      "Email: you must verify your email address with a code we send. You have a short grace period after signing up; after that some features stay locked until you verify.",
+      "Your legal name: before you can withdraw, you confirm your Bank Verification Number (BVN). We send it to our payment partner, Paystack, which matches it against the bank records and returns the name registered to that BVN. We save that name (as your \"official name\") and the date it was verified, and we lock the name once it is verified.",
+      "Your bank account: you add the bank and account number you want to be paid into. We look up the account name with Paystack and show it to you. Every new account starts as \"pending\" until a member of Enski staff reviews and approves it.",
+      "The names must match: you can only be paid into an approved account whose name matches the name on your BVN. If they do not match, the withdrawal is refused. Use an account in your own name. We check again when a payout is approved."
+     ]
+    ]
+   },
+   {
+    "n": "4",
+    "title": "Payouts",
+    "blocks": [
+     [
+      "You can ask for a payout only after your BVN is verified and you have an approved bank account.",
+      "A request is reviewed by Enski staff before it is paid. The review time and any waiting period between requests are shown in your wallet.",
+      "We hold the earnings of a product while that product is suspended.",
+      "An approved bank account cannot be deleted by you. Contact support if you need to change it."
+     ]
+    ]
+   },
+   {
+    "n": "5",
+    "title": "What we do with your information",
+    "blocks": [
+     "We use it only to run these checks, to pay you, and to meet the law. We share the BVN and bank details with our payment partner for the check, and we do not sell them. Access inside Enski is limited to staff who handle payouts and compliance, and bank account numbers and BVN details are masked for read-only staff. We keep these records for as long as the law requires and as long as we need them to pay you and settle disputes. See our Privacy Policy for how long we keep information and your rights."
+    ]
+   },
+   {
+    "n": "6",
+    "title": "If a check fails",
+    "blocks": [
+     "If you cannot complete the BVN check, contact [support@enski.net](mailto:support@enski.net) and we will tell you what else we can accept. If we cannot verify you yet, payouts wait until the check is done."
+    ]
+   },
+   {
+    "n": "7",
+    "title": "Contact",
+    "blocks": [
+     "If you have any questions about this policy, please contact us at [support@enski.net](mailto:support@enski.net)."
+    ]
+   }
+  ]
+ }
+}
